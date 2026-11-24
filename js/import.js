@@ -126,22 +126,46 @@ function impBuildFile(f) {
     }
     if (!type || !(amt > 0)) continue;
     const note = String(g("desc") || "").replace(/\s+/g, " ").trim().slice(0, 120);
-    out.push({ date, type, amount: Math.round(amt * 100) / 100, note, category: impGuess(note, type), account: f.label, file: f });
+    out.push({ date, type, dir: type === "income" ? "in" : "out", amount: Math.round(amt * 100) / 100, note, category: impGuess(note, type), account: f.label, file: f });
   }
   f.items = out;
 }
 
-// own-account transfers: an expense in one file matched by an income of the same amount (±3 days) in another file,
-// or a description that clearly says self / own account / card bill payment. Flagged and left unticked.
-const IMP_XFER_RE = /\b(self|own a\/?c|own account|a\/c transfer|acct transfer|fund transfer|trf to self|transfer to self|credit card (bill )?pay|cc pay|card payment|autopay|ccpay|billdesk.*card|to savings|from savings|sweep|rd instal|fd (creat|clos|mat)|closure proceeds|maturity proceeds|premature closure|(fd|rd|deposit) (closure|maturity|booking|opening))/i;
+// own-account transfers. Flagged when: (1) the description holds an identifier of one of "my accounts" (Net worth) other than
+// the statement's own account, (2) an expense in one account is matched by an income of the same amount (±3 days) in another,
+// or (3) the wording says self / own account / card bill / FD-RD closure.
+const IMP_XFER_RE = /\b(self|own a\/?c|own account|a\/c transfer|acct transfer|fund transfer|trf to self|transfer to self|credit card (bill )?pay|cc pay|ccpay|billdesk.*card|to savings|from savings|sweep|rd instal|fd (creat|clos|mat)|closure proceeds|maturity proceeds|premature closure|(fd|rd|deposit) (closure|maturity|booking|opening))/i;
+const impAmt = (t) => Math.round(Number(t.amount) * 100);
+function impOwn() {
+  const out = [];
+  (data.accounts || []).forEach((a) => String(a.match || "").split(/[,;\n]/).map((x) => x.trim().toLowerCase()).filter((x) => x.length >= 3)
+    .forEach((id) => out.push({ id, name: String(a.name || ""), loan: a.role === "Loan" || a.kind === "liability" })));
+  (data.cards || []).forEach((c) => { if (c.last4) out.push({ id: String(c.last4), name: c.name || "", card: true }); });
+  return out;
+}
+function impXferCat(t, peer) {
+  const n = String(t.note || "").toLowerCase();
+  if (peer && peer.card || /credit card|cc pay|ccpay|billdesk.*card/.test(n)) return "Card bill";
+  if (peer && peer.loan) return "Loan repayment";
+  if (/\b(fd|rd|deposit|closure|maturity|sweep)\b/.test(n)) return "FD / RD";
+  return "Own account";
+}
 function impMarkTransfers(all) {
-  all.forEach((t) => { t.xfer = IMP_XFER_RE.test(t.note) ? "keyword" : ""; });
+  const own = impOwn();
+  all.forEach((t) => {
+    t.xfer = ""; t.xcat = "";
+    const n = String(t.note || "").toLowerCase(), acc = String(t.account || "").toLowerCase();
+    const hit = own.find((o) => n.includes(o.id) && o.name.toLowerCase() !== acc && (!o.card || /card|cc|bill|payment/.test(n)));
+    if (hit) { t.xfer = "own"; t.xcat = impXferCat(t, hit); }
+    else if (IMP_XFER_RE.test(t.note)) { t.xfer = "keyword"; t.xcat = impXferCat(t, null); }
+  });
+  const grp = (t) => t.file || t.account || "";
   const day = (d) => Date.parse(d + "T00:00:00Z") / 864e5;
-  const inc = all.filter((t) => t.type === "income");
+  const inc = all.filter((t) => t.type === "income" || (t.type === "transfer" && t.dir === "in"));
   const used = new Set();
-  all.filter((t) => t.type === "expense").forEach((e) => {
-    const m = inc.find((i) => !used.has(i) && i.file !== e.file && i.amount === e.amount && Math.abs(day(i.date) - day(e.date)) <= 3);
-    if (m) { used.add(m); e.xfer = m.xfer = "paired"; }
+  all.filter((t) => t.dir !== "in").forEach((e) => {
+    const m = inc.find((i) => !used.has(i) && grp(i) && grp(e) && grp(i) !== grp(e) && impAmt(i) === impAmt(e) && Math.abs(day(i.date) - day(e.date)) <= 3);
+    if (m) { used.add(m); e.xfer = m.xfer = e.xfer || "paired"; m.xfer = m.xfer || "paired"; e.xcat = e.xcat || impXferCat(e, null); m.xcat = m.xcat || impXferCat(m, null); }
   });
 }
 
@@ -149,14 +173,20 @@ function impMarkTransfers(all) {
 function impMerge() {
   const all = imp.files.flatMap((f) => f.items);
   const seen = {};
-  data.transactions.forEach((t) => { const k = `${t.date}|${t.type}|${Number(t.amount).toFixed(2)}`; seen[k] = (seen[k] || 0) + 1; });
-  const key = (t) => `${t.date}|${t.type}|${t.amount.toFixed(2)}`;
+  data.transactions.forEach((t) => { const k = `${t.date}|${t.dir || (t.type === "income" ? "in" : "out")}|${Number(t.amount).toFixed(2)}`; seen[k] = (seen[k] || 0) + 1; });
+  const key = (t) => `${t.date}|${t.dir}|${t.amount.toFixed(2)}`;
   all.filter((t) => t.checked && t.dup).forEach((t) => { if (seen[key(t)] > 0) seen[key(t)]--; });
   impMarkTransfers(all);
   all.filter((t) => !t.checked).forEach((t) => {
     t.checked = true;
     if (seen[key(t)] > 0) { seen[key(t)]--; t.dup = true; } else t.dup = false;
-    t.on = !t.dup && !t.xfer;
+    t.on = !t.dup;
+  });
+  all.forEach((t) => { // flagged rows become Transfers (own calculation) unless the user changed the type by hand
+    if (t.touched) return;
+    if (t.xfer && t.type !== "transfer") { t.type = "transfer"; t.category = t.xcat; t.auto = true; }
+    else if (t.xfer && t.auto) t.category = t.xcat;
+    else if (!t.xfer && t.auto) { t.type = t.dir === "in" ? "income" : "expense"; t.category = impGuess(t.note, t.type); t.auto = false; }
   });
   imp.items = all.sort((a, b) => b.date.localeCompare(a.date));
 }
@@ -347,7 +377,7 @@ function impStep1() {
 
 function impStep2() {
   const b = document.getElementById("impBody");
-  const items = imp.items, on = items.filter((t) => t.on), dups = items.filter((t) => t.dup).length;
+  const items = imp.items, on = items.filter((t) => t.on), dups = items.filter((t) => t.dup).length, nx = items.filter((t) => t.type === "transfer").length;
   const sum = (a, ty) => a.filter((t) => t.type === ty).reduce((s, t) => s + t.amount, 0);
   const shown = items.slice(0, 500);
   const multi = imp.files.length > 1;
@@ -356,30 +386,31 @@ function impStep2() {
     <div class="impfiles">${imp.files.map((f, fi) => `
       <details class="impfile"${f.items.length ? "" : " open"}>
         <summary><b>${esc(f.name)}</b> · ${f.items.length} row${f.items.length === 1 ? "" : "s"}${f.items.length ? "" : ' <span class="bad">— check mapping</span>'}
-          <span class="impacct">Account <input data-label="${fi}" value="${esc(f.label)}" maxlength="40" title="Label saved on each transaction from this file"></span>
+          <span class="impacct">Account <input data-label="${fi}" value="${esc(f.label)}" maxlength="40" list="impAccts" title="Pick one of your accounts (Net worth) or type a label; saved on each transaction from this file"></span>
           <button type="button" class="del" data-rmfile="${fi}" title="Remove this file">✕</button></summary>
         <div class="modal-grid imp-grid">${mapSel(fi, f, "date", "Date")}${mapSel(fi, f, "desc", "Description")}${mapSel(fi, f, "debit", "Debit / Withdrawal")}${mapSel(fi, f, "credit", "Credit / Deposit")}${mapSel(fi, f, "amount", "Amount (single column)")}${mapSel(fi, f, "drcr", "Dr/Cr or Type column")}
         <label>Unsigned amounts are<select data-fi="${fi}" data-nosign><option value="expense"${f.noSign === "expense" ? " selected" : ""}>Expenses</option><option value="income"${f.noSign === "income" ? " selected" : ""}>Income</option></select></label></div>
       </details>`).join("")}
       <button type="button" class="ghost sm" id="impMore">+ Add more files</button><input type="file" id="impMoreIn" accept=".csv,.txt,.xlsx,.xls,.pdf" multiple hidden>
     </div>
-    <p class="muted sm">${items.length} transaction${items.length === 1 ? "" : "s"} from ${imp.files.length} file${imp.files.length === 1 ? "" : "s"}${dups ? ` · <b>${dups} already in your ledger</b> (unticked)` : ""}${items.some((t) => t.xfer) ? ` · <b>${items.filter((t) => t.xfer).length} look like own-account transfers</b> (unticked, tick any you want)` : ""}</p>
+    <p class="muted sm">${items.length} transaction${items.length === 1 ? "" : "s"} from ${imp.files.length} file${imp.files.length === 1 ? "" : "s"}${dups ? ` · <b>${dups} already in your ledger</b> (unticked)` : ""}${nx ? ` · <b>${nx} own-account transfer${nx === 1 ? "" : "s"}</b> (kept out of income &amp; expenses; change Type to override)` : ""}</p>
+    <datalist id="impAccts">${(data.accounts || []).map((a) => `<option value="${esc(a.name)}">`).join("")}</datalist>
     ${items.length ? `<div class="scroll impscroll"><table class="imptable"><thead><tr><th><input type="checkbox" id="impAll" ${on.length === items.length ? "checked" : ""}></th><th>Date</th>${multi ? "<th>Account</th>" : ""}<th>Type</th><th>Category</th><th>Description</th><th class="num">Amount</th></tr></thead>
-      <tbody>${shown.map((t, i) => `<tr class="${t.dup || t.xfer ? "dup" : ""}"><td><input type="checkbox" data-on="${i}" ${t.on ? "checked" : ""}></td><td>${esc(t.date)}</td>${multi ? `<td class="muted">${esc(t.account)}</td>` : ""}
-        <td><select data-ty="${i}"><option${t.type === "expense" ? " selected" : ""}>expense</option><option${t.type === "income" ? " selected" : ""}>income</option></select></td>
-        <td><select data-cat="${i}">${opts(t.type === "income" ? INCOME_CATS : EXPENSE_CATS, t.category)}</select></td>
-        <td class="impdesc" title="${esc(t.note)}">${esc(t.note)}${t.dup ? ' <span class="pill">duplicate</span>' : ""}${t.xfer ? ` <span class="pill" title="${t.xfer === "paired" ? "Matching entry in another imported account" : "Description looks like a transfer or card bill payment"}">transfer</span>` : ""}</td>
-        <td class="num ${t.type === "income" ? "good" : "bad"}">${t.type === "income" ? "+" : "−"}${fmt(t.amount)}</td></tr>`).join("")}</tbody></table></div>
+      <tbody>${shown.map((t, i) => `<tr class="${t.dup ? "dup" : ""}"><td><input type="checkbox" data-on="${i}" ${t.on ? "checked" : ""}></td><td>${esc(t.date)}</td>${multi ? `<td class="muted">${esc(t.account)}</td>` : ""}
+        <td><select data-ty="${i}"><option${t.type === "expense" ? " selected" : ""}>expense</option><option${t.type === "income" ? " selected" : ""}>income</option><option${t.type === "transfer" ? " selected" : ""}>transfer</option></select></td>
+        <td><select data-cat="${i}">${opts(t.type === "income" ? INCOME_CATS : t.type === "transfer" ? XFER_CATS : EXPENSE_CATS, t.category)}</select></td>
+        <td class="impdesc" title="${esc(t.note)}">${esc(t.note)}${t.dup ? ' <span class="pill">duplicate</span>' : ""}${t.type === "transfer" ? ` <span class="pill" title="${t.xfer === "paired" ? "Matching entry in another imported account" : t.xfer === "own" ? "Mentions one of your accounts" : t.xfer ? "Wording looks like a transfer" : "Marked as transfer"}">transfer</span>` : ""}</td>
+        <td class="num ${txCls(t)}">${t.type === "transfer" ? (t.dir === "in" ? "⇄ in " : "⇄ out ") + fmt(t.amount) : txAmt(t)}</td></tr>`).join("")}</tbody></table></div>
       ${items.length > shown.length ? `<p class="muted sm">Showing the first ${shown.length} rows; all ${items.length} are imported.</p>` : ""}`
     : `<p class="bad">No transactions recognised yet. Open a file above and check its column mapping (a Date column and a Debit/Credit or Amount column are needed).</p>`}
-    <div class="modal-acts"><span class="muted sm" id="impSum">${on.length} selected · Income <b class="good">${fmt(sum(on, "income"))}</b> · Expenses <b class="bad">${fmt(sum(on, "expense"))}</b></span>
+    <div class="modal-acts"><span class="muted sm" id="impSum">${on.length} selected · Income <b class="good">${fmt(sum(on, "income"))}</b> · Expenses <b class="bad">${fmt(sum(on, "expense"))}</b> · Transfers ⇄ <b>${fmt(sum(on, "transfer"))}</b></span>
       <button type="button" class="primary" id="impGo" ${on.length ? "" : "disabled"}>Import ${on.length}</button></div>`;
   const rebuild = (fi) => { const f = imp.files[fi]; f.items.forEach((t) => (t.checked = false)); impBuildFile(f); impMerge(); impStep2(); };
   b.querySelectorAll("[data-map]").forEach((s) => (s.onchange = () => { const f = imp.files[s.dataset.fi]; f.map[s.dataset.map] = Number(s.value); rebuild(s.dataset.fi); }));
   b.querySelectorAll("[data-nosign]").forEach((s) => (s.onchange = () => { imp.files[s.dataset.fi].noSign = s.value; rebuild(s.dataset.fi); }));
   b.querySelectorAll("[data-label]").forEach((i) => {
     i.onclick = (e) => e.stopPropagation(); i.onkeydown = (e) => e.stopPropagation();
-    i.onchange = () => { const f = imp.files[i.dataset.label]; f.label = i.value.trim() || f.name; f.items.forEach((t) => (t.account = f.label)); impStep2(); };
+    i.onchange = () => { const f = imp.files[i.dataset.label]; f.label = i.value.trim() || f.name; f.items.forEach((t) => (t.account = f.label)); impMerge(); impStep2(); };
   });
   b.querySelectorAll("[data-rmfile]").forEach((x) => (x.onclick = (e) => {
     e.preventDefault(); e.stopPropagation(); imp.files.splice(Number(x.dataset.rmfile), 1); impMerge();
@@ -389,21 +420,22 @@ function impStep2() {
   document.getElementById("impMoreIn").onchange = async (e) => { await impAddFiles(e.target.files); impStep2(); };
   const upd = () => {
     const o = imp.items.filter((t) => t.on);
-    document.getElementById("impSum").innerHTML = `${o.length} selected · Income <b class="good">${fmt(sum(o, "income"))}</b> · Expenses <b class="bad">${fmt(sum(o, "expense"))}</b>`;
+    document.getElementById("impSum").innerHTML = `${o.length} selected · Income <b class="good">${fmt(sum(o, "income"))}</b> · Expenses <b class="bad">${fmt(sum(o, "expense"))}</b> · Transfers ⇄ <b>${fmt(sum(o, "transfer"))}</b>`;
     const g = document.getElementById("impGo"); g.textContent = `Import ${o.length}`; g.disabled = !o.length;
     const all = document.getElementById("impAll"); if (all) all.checked = o.length === imp.items.length;
   };
   b.querySelectorAll("[data-on]").forEach((c) => (c.onchange = () => { imp.items[c.dataset.on].on = c.checked; upd(); }));
   b.querySelectorAll("[data-cat]").forEach((c) => (c.onchange = () => { imp.items[c.dataset.cat].category = c.value; }));
   b.querySelectorAll("[data-ty]").forEach((c) => (c.onchange = () => {
-    const t = imp.items[c.dataset.ty]; t.type = c.value; t.category = impGuess(t.note, t.type); impStep2();
+    const t = imp.items[c.dataset.ty]; t.type = c.value; t.touched = true; t.auto = false;
+    t.category = t.type === "transfer" ? t.xcat || "Own account" : impGuess(t.note, t.type); impStep2();
   }));
   const all = document.getElementById("impAll"); if (all) all.onchange = () => { imp.items.forEach((t) => (t.on = all.checked)); impStep2(); };
   document.getElementById("impGo").onclick = impCommit;
 }
 
 async function impCommit() {
-  const rows = imp.items.filter((t) => t.on).map(({ date, type, amount, note, category, account }) => ({ date, type, amount, note, category, ...(account ? { account } : {}) }));
+  const rows = imp.items.filter((t) => t.on).map(({ date, type, amount, note, category, account, dir }) => ({ date, type, dir, amount, note, category, ...(account ? { account } : {}) }));
   if (!rows.length) return;
   const btn = document.getElementById("impGo"); btn.disabled = true; btn.textContent = "Importing…";
   try {
@@ -420,4 +452,30 @@ async function impCommit() {
     const er = document.createElement("p"); er.className = "bad sm"; er.textContent = "Import failed: " + (e.message || e); btn.parentElement.before(er);
   }
 }
+// convert existing ledger entries that look like own-account transfers
+function impScanLedger() {
+  const cand = data.transactions.filter((t) => t.type === "income" || t.type === "expense")
+    .map((t) => ({ id: t.id, type: t.type, dir: t.type === "income" ? "in" : "out", amount: Number(t.amount) || 0, date: String(t.date), note: String(t.note || ""), account: t.account || "", file: t.account || "" }));
+  impMarkTransfers(cand);
+  const hits = cand.filter((t) => t.xfer);
+  document.getElementById("scanModal")?.remove();
+  const m = document.createElement("div"); m.id = "scanModal"; m.className = "modal";
+  m.innerHTML = `<div class="modal-box card imp-box"><div class="card-title"><h3>Transfers found in your entries</h3><button type="button" class="del" data-x title="Close">✕</button></div>
+    ${hits.length ? `<p class="muted sm">${hits.length} entr${hits.length === 1 ? "y looks" : "ies look"} like own-account transfers. They will move out of income/expenses into Transfers. Untick any that are real.</p>
+    <div class="scroll impscroll"><table class="imptable"><tbody>${hits.map((t, i) => `<tr><td><input type="checkbox" data-s="${i}" checked></td><td>${esc(t.date)}</td><td>${esc(t.account)}</td><td class="impdesc" title="${esc(t.note)}">${esc(t.note)}</td><td>${esc(t.xcat)}</td><td class="num">${t.dir === "in" ? "+" : "−"}${fmt(t.amount)}</td></tr>`).join("")}</tbody></table></div>
+    <div class="modal-acts"><button type="button" class="ghost" data-x>Cancel</button><button type="button" class="primary" id="scanGo">Convert</button></div>`
+    : `<p class="muted">No transfers found. Add your accounts and their identifiers under Net worth, or label statements with the account name when importing, then try again.</p>`}</div>`;
+  document.body.appendChild(m);
+  const close = () => m.remove();
+  m.querySelectorAll("[data-x]").forEach((b) => (b.onclick = close));
+  m.addEventListener("mousedown", (e) => { if (e.target === m) close(); });
+  const go = document.getElementById("scanGo");
+  if (go) go.onclick = async () => {
+    go.disabled = true; go.textContent = "Converting…";
+    const pick = hits.filter((_, i) => m.querySelector(`[data-s="${i}"]`).checked);
+    for (let i = 0; i < pick.length; i += 25) await Promise.all(pick.slice(i, i + 25).map((t) => update("transactions", t.id, { type: "transfer", dir: t.dir, category: t.xcat })));
+    close();
+  };
+}
+window.impScanLedger = impScanLedger;
 window.openImport = openImport;

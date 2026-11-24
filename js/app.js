@@ -158,6 +158,8 @@ async function resetDemo() {
 
 
 const INCOME_CATS = ["Salary", "Business", "Interest", "Other"];
+const XFER_CATS = ["Own account", "Loan repayment", "Card bill", "FD / RD"];
+const ACCT_ROLES = ["Savings", "Salary", "Current", "Loan", "Other"];
 const EXPENSE_CATS = ["Food", "Rent", "Transport", "Utilities", "Shopping", "Health", "Entertainment", "Subscriptions", "Other"];
 const INV_TYPES = ["Stock", "Mutual Fund", "FD", "RD", "Fixed Income", "Gold", "Crypto", "Other"];
 const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
@@ -167,6 +169,8 @@ const $app = document.getElementById("app");
 const inr = new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 });
 const fmt = (n) => inr.format(n || 0);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const txAmt = (t) => (t.type === "transfer" ? `⇄ ${fmt(t.amount)}` : `${t.type === "income" ? "+" : "−"}${fmt(t.amount)}`);
+const txCls = (t) => (t.type === "income" ? "good" : t.type === "transfer" ? "muted" : "bad");
 const opts = (arr, sel) => arr.map((x) => `<option${x === sel ? " selected" : ""}>${esc(x)}</option>`).join("");
 const monthKey = (d) => String(d).slice(0, 7);
 const pad2 = (n) => String(n).padStart(2, "0");
@@ -282,7 +286,7 @@ function bucketize(tx) {
     key = (t) => ks.indexOf(monthKey(t.date));
   }
   const inc = labels.map(() => 0), exp = labels.map(() => 0);
-  tx.forEach((t) => { const i = key(t); if (i < 0) return; (t.type === "income" ? inc : exp)[i] += Number(t.amount) || 0; });
+  tx.forEach((t) => { const i = key(t); if (i < 0) return; if (t.type === "transfer") return; (t.type === "income" ? inc : exp)[i] += Number(t.amount) || 0; });
   return { labels, inc, exp, sav: inc.map((v, k) => v - exp[k]) };
 }
 const catColor = (c) => pal()[[...new Set([...EXPENSE_CATS, ...INCOME_CATS])].indexOf(c) % 6] || css("--c6");
@@ -443,7 +447,7 @@ function overview() {
         <div class="card-title"><h3>Transaction history</h3><button class="link" data-go="transactions">View all</button></div>
         <div class="txlist">${recent.map((t) => `<div class="tx">${txIcon(t) || `<div class="avatar" style="background:linear-gradient(135deg,${catColor(t.category)},${lighten(catColor(t.category), 0.45)})">${esc((t.note || t.category).charAt(0).toUpperCase())}</div>`}
           <div><div class="t">${esc(t.note || t.category)}</div><div class="s">${esc(t.date)} · ${esc(t.category)}</div></div>
-          <div class="a ${t.type === "income" ? "good" : ""}">${t.type === "income" ? "+" : "−"}${fmt(t.amount)}</div></div>`).join("") || `<span class="muted">No transactions in this period.</span>`}</div>
+          <div class="a ${t.type === "income" ? "good" : t.type === "transfer" ? "muted" : ""}">${txAmt(t)}</div></div>`).join("") || `<span class="muted">No transactions in this period.</span>`}</div>
       </section>
       <section class="card">
         <div class="card-title"><h3>Quick actions</h3></div>
@@ -491,6 +495,10 @@ function transactions() {
     .filter((t) => !F.q || `${t.note || ""} ${t.category}`.toLowerCase().includes(F.q))
     .sort((a, b) => b.date.localeCompare(a.date));
   const rows = all.slice(0, 300);
+  const xf = data.transactions.filter(inSel).filter((t) => t.type === "transfer");
+  const xIn = sum(xf.filter((t) => t.dir === "in"), (t) => t.amount), xOut = sum(xf.filter((t) => t.dir !== "in"), (t) => t.amount);
+  const xAcc = {};
+  xf.forEach((t) => { const k = t.account || "Unlabelled"; const o = (xAcc[k] = xAcc[k] || { i: 0, o: 0 }); o[t.dir === "in" ? "i" : "o"] += Number(t.amount) || 0; });
   const li = sum(all.filter((t) => t.type === "income"), (t) => t.amount), le = sum(all.filter((t) => t.type === "expense"), (t) => t.amount);
   $app.innerHTML = `
     <div class="card">
@@ -503,12 +511,18 @@ function transactions() {
         <input name="note" placeholder="Note" maxlength="120">
         <button class="primary">Add</button>
       </form>
-      <p class="muted">${all.length} entries · Income <b class="good">${fmt(li)}</b> · Expenses <b class="bad">${fmt(le)}</b> · Net <b>${fmt(li - le)}</b>${all.length > rows.length ? ` · showing latest ${rows.length}` : ""}</p>
+      <p class="muted">${all.length} entries · Income <b class="good">${fmt(li)}</b> · Expenses <b class="bad">${fmt(le)}</b> · Net <b>${fmt(li - le)}</b> · Transfers ⇄ <b>${fmt(sum(all.filter((t) => t.type === "transfer"), (t) => t.amount))}</b>${all.length > rows.length ? ` · showing latest ${rows.length}` : ""}</p>
       <div class="scroll"><table><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Note</th><th class="num">Amount</th><th></th></tr></thead>
       <tbody>${rows.map((t) => `<tr><td>${esc(t.date)}</td><td>${esc(t.type)}</td><td>${esc(t.category)}</td><td>${txIcon(t) ? `<span class="notecell">${txIcon(t)}${esc(t.note)}</span>` : esc(t.note)}${t.account ? ` <span class="acctag">${esc(t.account)}</span>` : ""}</td>
-        <td class="num ${t.type === "income" ? "good" : "bad"}">${t.type === "income" ? "+" : "−"}${fmt(t.amount)}</td>
+        <td class="num ${txCls(t)}">${txAmt(t)}</td>
         <td><button class="del" data-del="${esc(t.id)}" title="Delete">✕</button></td></tr>`).join("") || `<tr><td colspan="6" class="muted">No transactions yet.</td></tr>`}</tbody></table></div>
+    </div>
+    <div class="card xferbox">
+      <div class="card-title"><h3>Transfers between my accounts</h3><button type="button" class="ghost sm" id="xferScan">Find transfers in my entries</button></div>
+      <p class="muted">Counted separately: not income, not expense, not in savings rate. ${xf.length} entr${xf.length === 1 ? "y" : "ies"} · Moved out <b>${fmt(xOut)}</b> · Moved in <b>${fmt(xIn)}</b> · Net left your accounts <b>${fmt(xOut - xIn)}</b> <span class="sm">(loans, FDs or accounts you haven't imported)</span></p>
+      ${xf.length ? `<div class="scroll"><table><thead><tr><th>Account</th><th class="num">Out</th><th class="num">In</th><th class="num">Net</th></tr></thead><tbody>${Object.entries(xAcc).map(([k, v]) => `<tr><td>${esc(k)}</td><td class="num">${fmt(v.o)}</td><td class="num">${fmt(v.i)}</td><td class="num">${fmt(v.i - v.o)}</td></tr>`).join("")}</tbody></table></div>` : `<p class="muted sm">None yet. Import statements from several accounts, add your accounts under Net worth (with account numbers / UPI ids), or tap Find transfers.</p>`}
     </div>`;
+  document.getElementById("xferScan").onclick = () => window.impScanLedger && window.impScanLedger();
   document.getElementById("impBtn").onclick = () => window.openImport && window.openImport();
   const typeSel = document.getElementById("typeSel");
   typeSel.onchange = () => (document.getElementById("catSel").innerHTML = opts(typeSel.value === "income" ? INCOME_CATS : EXPENSE_CATS));
@@ -667,11 +681,13 @@ function networthView() {
         <form class="inline" id="f">
           <input name="name" placeholder="Name" required maxlength="60">
           <select name="kind"><option value="bank account">Bank account</option><option value="asset">Other asset</option><option value="liability">Liability</option></select>
+          <select name="role" title="What this account is used for"><option value="">Role (optional)</option>${ACCT_ROLES.map((r) => `<option>${r}</option>`).join("")}</select>
+          <input name="match" placeholder="Identifiers: a/c no., UPI id, name (comma separated)" maxlength="120" title="Used to recognise transfers in imported statements">
           <input name="value" type="number" min="0" step="0.01" placeholder="Value (₹)" required>
           <button class="primary">Add</button>
         </form>
         <div class="scroll"><table><thead><tr><th>Name</th><th>Kind</th><th class="num">Value</th><th></th></tr></thead>
-        <tbody>${data.accounts.map((a) => `<tr><td><div class="subname"><label class="icopick" title="Click to use your own icon">${acctIcon(a)}<input type="file" accept="image/*" data-ico="${esc("acct:" + a.name.toLowerCase())}" hidden></label><span>${esc(a.name)}${subIcons["acct:" + a.name.toLowerCase()] ? ` <a href="#" class="link" data-icoreset="${esc("acct:" + a.name.toLowerCase())}">reset</a>` : ""}</span></div></td><td><span class="pill ${a.kind === "liability" ? "bad" : a.kind === "bank account" ? "ok" : ""}">${a.kind === "bank account" ? "Bank account" : a.kind === "asset" ? "Other asset" : "Liability"}</span></td>
+        <tbody>${data.accounts.map((a) => `<tr><td><div class="subname"><label class="icopick" title="Click to use your own icon">${acctIcon(a)}<input type="file" accept="image/*" data-ico="${esc("acct:" + a.name.toLowerCase())}" hidden></label><span>${esc(a.name)}${subIcons["acct:" + a.name.toLowerCase()] ? ` <a href="#" class="link" data-icoreset="${esc("acct:" + a.name.toLowerCase())}">reset</a>` : ""}</span></div></td><td><span class="pill ${a.kind === "liability" ? "bad" : a.kind === "bank account" ? "ok" : ""}">${a.kind === "bank account" ? "Bank account" : a.kind === "asset" ? "Other asset" : "Liability"}</span>${a.role ? ` <span class="muted sm">${esc(a.role)}</span>` : ""}${a.match ? `<div class="muted sm" title="Used to recognise transfers in statements">🔗 ${esc(a.match)}</div>` : ""}</td>
           <td class="num ${a.kind === "liability" ? "bad" : ""}">${fmt(a.value)}</td>
           <td><button class="del" data-del="${esc(a.id)}" title="Delete">✕</button></td></tr>`).join("") || `<tr><td colspan="4" class="muted">Nothing added yet.</td></tr>`}</tbody></table></div>
         <div class="chart-wrap" style="margin-top:18px"><canvas id="c1"></canvas></div>
@@ -702,7 +718,7 @@ function networthView() {
   document.getElementById("f").onsubmit = async (e) => {
     e.preventDefault();
     const f = new FormData(e.target);
-    await add("accounts", { name: f.get("name"), kind: f.get("kind"), value: Number(f.get("value")) });
+    await add("accounts", { name: f.get("name"), kind: f.get("kind"), role: f.get("role") || "", match: String(f.get("match") || "").trim(), value: Number(f.get("value")) });
   };
   document.getElementById("cardForm").onsubmit = async (e) => {
     e.preventDefault();
@@ -936,12 +952,12 @@ function goalsView() {
 
 // ---------- edit dialog (every item in every section) ----------
 const NETS = ["Visa", "Mastercard", "RuPay", "Coral", "Amex", "Diners", "Other"];
-const ALL_CATS = [...new Set([...INCOME_CATS, ...EXPENSE_CATS])];
+const ALL_CATS = [...new Set([...INCOME_CATS, ...EXPENSE_CATS, ...XFER_CATS])];
 const EDIT_SCHEMA = {
-  transactions: [["type", "Type", "select", ["expense", "income"]], ["category", "Category", "select", ALL_CATS], ["amount", "Amount (₹)", "number"], ["date", "Date", "date"], ["note", "Note", "text"], ["account", "Account / statement label", "text"]],
+  transactions: [["type", "Type", "select", ["expense", "income", "transfer"]], ["dir", "Direction (transfers)", "select", [["out", "Money out"], ["in", "Money in"]]], ["category", "Category", "select", ALL_CATS], ["amount", "Amount (₹)", "number"], ["date", "Date", "date"], ["note", "Note", "text"], ["account", "Account / statement label", "text"]],
   budgets: [["category", "Category", "select", EXPENSE_CATS], ["limit", "Monthly limit (₹)", "number"]],
   investments: [["name", "Name", "text"], ["type", "Type", "select", INV_TYPES], ["invested", "Invested (₹)", "number"], ["current", "Current value (₹)", "number"]],
-  accounts: [["name", "Name", "text"], ["kind", "Type", "select", [["bank account", "Bank account"], ["asset", "Other asset"], ["liability", "Liability"]]], ["value", "Value (₹)", "number"]],
+  accounts: [["name", "Name", "text"], ["kind", "Type", "select", [["bank account", "Bank account"], ["asset", "Other asset"], ["liability", "Liability"]]], ["role", "Role", "select", ["", ...ACCT_ROLES]], ["match", "Identifiers (account no., UPI id, name; comma separated)", "text"], ["value", "Value (₹)", "number"]],
   goals: [["name", "Goal name", "text"], ["target", "Target (₹)", "number"], ["saved", "Saved so far (₹)", "number"]],
   cards: [["name", "Card name", "text"], ["last4", "Last 4 digits", "text"], ["network", "Network", "select", NETS], ["limit", "Credit limit (₹)", "number"], ["outstanding", "Outstanding (₹)", "number"], ["dueDay", "Due day (1-31)", "number"]],
   subs: [["name", "Name", "text"], ["category", "Category", "select", SUB_CATS], ["amount", "Amount (₹)", "number"], ["cycle", "Billing cycle", "select", [["monthly", "Monthly"], ["yearly", "Yearly"]]], ["day", "Billing day (1-31)", "number"], ["month", "Billing month (yearly, 1-12)", "number"]],
@@ -972,8 +988,11 @@ function openEdit(col, id) {
   m.querySelectorAll("[data-x]").forEach((b) => (b.onclick = close));
   const form = m.querySelector("form");
   if (col === "transactions") { // keep category list matched to type
-    const t = form.elements.type, c = form.elements.category;
-    t.onchange = () => { const cats = t.value === "income" ? INCOME_CATS : EXPENSE_CATS; const cur = c.value;
+    const t = form.elements.type, c = form.elements.category, dr = form.elements.dir;
+    const syncDir = () => { dr.closest("label").style.display = t.value === "transfer" ? "" : "none"; };
+    if (!item.dir) dr.value = item.type === "income" ? "in" : "out";
+    t.addEventListener("change", syncDir); syncDir();
+    t.onchange = () => { const cats = t.value === "income" ? INCOME_CATS : t.value === "transfer" ? XFER_CATS : EXPENSE_CATS; const cur = c.value;
       c.innerHTML = cats.map((x) => `<option${x === cur ? " selected" : ""}>${esc(x)}</option>`).join(""); };
     t.onchange(); if (![...c.options].some((o) => o.value === item.category)) c.value = c.options[0].value;
     c.value = [...c.options].some((o) => o.value === item.category) ? item.category : c.value;
@@ -987,6 +1006,7 @@ function openEdit(col, id) {
       else if (typeof v === "string") v = v.trim();
       patch[k] = v;
     }
+    if (col === "transactions") patch.dir = patch.type === "income" ? "in" : patch.type === "expense" ? "out" : patch.dir || "out";
     if (col === "cards") patch.last4 = String(patch.last4 || "").replace(/\D/g, "").slice(0, 4);
     if (col === "subs") { patch.day = Math.min(31, Math.max(1, patch.day || 1)); patch.month = patch.cycle === "yearly" ? Math.min(12, Math.max(1, patch.month || 1)) : null; }
     if (col === "cards") patch.dueDay = Math.min(31, Math.max(1, patch.dueDay || 1));
@@ -1059,7 +1079,7 @@ function renderFilters() {
   else if (F.mode === "year") ctl = `<select id="yearSel">${years.map((y) => `<option${y === F.year ? " selected" : ""}>${y}</option>`).join("")}</select>`;
   else if (F.mode === "range") ctl = `<input type="date" id="fromD" value="${esc(F.from)}"><span class="muted">to</span><input type="date" id="toD" value="${esc(F.to)}">`;
   let extra = "";
-  if (view === "transactions") extra = `<select id="typeF"><option value="all">All types</option><option value="income"${F.type === "income" ? " selected" : ""}>Income</option><option value="expense"${F.type === "expense" ? " selected" : ""}>Expense</option></select>
+  if (view === "transactions") extra = `<select id="typeF"><option value="all">All types</option><option value="income"${F.type === "income" ? " selected" : ""}>Income</option><option value="expense"${F.type === "expense" ? " selected" : ""}>Expense</option><option value="transfer"${F.type === "transfer" ? " selected" : ""}>Transfers</option></select>
     <select id="catF"><option value="all">All categories</option>${[...new Set([...INCOME_CATS, ...EXPENSE_CATS])].map((c) => `<option${c === F.cat ? " selected" : ""}>${esc(c)}</option>`).join("")}</select>`;
   $app.insertAdjacentHTML("afterbegin", `<div class="filters">
     <select id="modeSel">${modes.map(([v, l]) => `<option value="${v}"${v === F.mode ? " selected" : ""}>${l}</option>`).join("")}</select>${ctl}${extra}</div>`);
