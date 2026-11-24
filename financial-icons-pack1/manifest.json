@@ -1,0 +1,3145 @@
+[
+ {
+  "category": "OTT & Streaming",
+  "name": "Netflix",
+  "file": "ott-and-streaming/netflix.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "Amazon Prime Video",
+  "file": "ott-and-streaming/amazon-prime-video.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "Prime Video",
+  "file": "ott-and-streaming/prime-video.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "Disney+",
+  "file": "ott-and-streaming/disney-plus.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "Disney Plus",
+  "file": "ott-and-streaming/disney-plus.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "Hulu",
+  "file": "ott-and-streaming/hulu.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "HBO Max",
+  "file": "ott-and-streaming/hbo-max.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "Max",
+  "file": "ott-and-streaming/max.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "Apple TV",
+  "file": "ott-and-streaming/apple-tv.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "Apple TV+",
+  "file": "ott-and-streaming/apple-tv-plus.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "YouTube",
+  "file": "ott-and-streaming/youtube.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "YouTube TV",
+  "file": "ott-and-streaming/youtube-tv.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "Peacock",
+  "file": "ott-and-streaming/peacock.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "Paramount+",
+  "file": "ott-and-streaming/paramount-plus.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "Crunchyroll",
+  "file": "ott-and-streaming/crunchyroll.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "MUBI",
+  "file": "ott-and-streaming/mubi.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "Aha",
+  "file": "ott-and-streaming/aha.svg",
+  "source": "gilbarbara",
+  "type": "color"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "Tubi",
+  "file": "ott-and-streaming/tubi.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "Plex",
+  "file": "ott-and-streaming/plex.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "Twitch",
+  "file": "ott-and-streaming/twitch.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "Vimeo",
+  "file": "ott-and-streaming/vimeo.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "DAZN",
+  "file": "ott-and-streaming/dazn.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "Fubo",
+  "file": "ott-and-streaming/fubo.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "Sky",
+  "file": "ott-and-streaming/sky.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "Jellyfin",
+  "file": "ott-and-streaming/jellyfin.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "Emby",
+  "file": "ott-and-streaming/emby.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "Stremio",
+  "file": "ott-and-streaming/stremio.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "Kodi",
+  "file": "ott-and-streaming/kodi.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "Showtime",
+  "file": "ott-and-streaming/showtime.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "Starz",
+  "file": "ott-and-streaming/starz.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "Funimation",
+  "file": "ott-and-streaming/funimation.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "Kick",
+  "file": "ott-and-streaming/kick.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "Dailymotion",
+  "file": "ott-and-streaming/dailymotion.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "Rumble",
+  "file": "ott-and-streaming/rumble.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "Odysee",
+  "file": "ott-and-streaming/odysee.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Music & Audio",
+  "name": "Spotify",
+  "file": "music-and-audio/spotify.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Music & Audio",
+  "name": "Apple Music",
+  "file": "music-and-audio/apple-music.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Music & Audio",
+  "name": "YouTube Music",
+  "file": "music-and-audio/youtube-music.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Music & Audio",
+  "name": "Amazon Music",
+  "file": "music-and-audio/amazon-music.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Music & Audio",
+  "name": "Tidal",
+  "file": "music-and-audio/tidal.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Music & Audio",
+  "name": "Deezer",
+  "file": "music-and-audio/deezer.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Music & Audio",
+  "name": "SoundCloud",
+  "file": "music-and-audio/soundcloud.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Music & Audio",
+  "name": "Pandora",
+  "file": "music-and-audio/pandora.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Music & Audio",
+  "name": "Audible",
+  "file": "music-and-audio/audible.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Music & Audio",
+  "name": "Audiomack",
+  "file": "music-and-audio/audiomack.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Music & Audio",
+  "name": "Napster",
+  "file": "music-and-audio/napster.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Music & Audio",
+  "name": "Qobuz",
+  "file": "music-and-audio/qobuz.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Music & Audio",
+  "name": "Bandcamp",
+  "file": "music-and-audio/bandcamp.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Music & Audio",
+  "name": "Last.fm",
+  "file": "music-and-audio/last-fm.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Music & Audio",
+  "name": "Shazam",
+  "file": "music-and-audio/shazam.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Music & Audio",
+  "name": "iHeartRadio",
+  "file": "music-and-audio/iheartradio.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Gaming & App Stores",
+  "name": "Xbox",
+  "file": "gaming-and-app-stores/xbox.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Gaming & App Stores",
+  "name": "Xbox Game Pass",
+  "file": "gaming-and-app-stores/xbox-game-pass.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Gaming & App Stores",
+  "name": "PlayStation",
+  "file": "gaming-and-app-stores/playstation.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Gaming & App Stores",
+  "name": "PlayStation Plus",
+  "file": "gaming-and-app-stores/playstation-plus.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Gaming & App Stores",
+  "name": "Nintendo",
+  "file": "gaming-and-app-stores/nintendo.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Gaming & App Stores",
+  "name": "Nintendo Switch",
+  "file": "gaming-and-app-stores/nintendo-switch.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Gaming & App Stores",
+  "name": "Steam",
+  "file": "gaming-and-app-stores/steam.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Gaming & App Stores",
+  "name": "Epic Games",
+  "file": "gaming-and-app-stores/epic-games.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Gaming & App Stores",
+  "name": "Google Play",
+  "file": "gaming-and-app-stores/google-play.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Gaming & App Stores",
+  "name": "App Store",
+  "file": "gaming-and-app-stores/app-store.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Gaming & App Stores",
+  "name": "Apple Arcade",
+  "file": "gaming-and-app-stores/apple-arcade.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Gaming & App Stores",
+  "name": "Ubisoft",
+  "file": "gaming-and-app-stores/ubisoft.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Gaming & App Stores",
+  "name": "EA",
+  "file": "gaming-and-app-stores/ea.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Gaming & App Stores",
+  "name": "Electronic Arts",
+  "file": "gaming-and-app-stores/electronic-arts.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Gaming & App Stores",
+  "name": "Riot Games",
+  "file": "gaming-and-app-stores/riot-games.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Gaming & App Stores",
+  "name": "Battle.net",
+  "file": "gaming-and-app-stores/battle-net.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Gaming & App Stores",
+  "name": "Roblox",
+  "file": "gaming-and-app-stores/roblox.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Gaming & App Stores",
+  "name": "Minecraft",
+  "file": "gaming-and-app-stores/minecraft.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Gaming & App Stores",
+  "name": "Itch.io",
+  "file": "gaming-and-app-stores/itch-io.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Gaming & App Stores",
+  "name": "Humble Bundle",
+  "file": "gaming-and-app-stores/humble-bundle.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Gaming & App Stores",
+  "name": "Supercell",
+  "file": "gaming-and-app-stores/supercell.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Gaming & App Stores",
+  "name": "PUBG",
+  "file": "gaming-and-app-stores/pubg.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Banks - India",
+  "name": "HDFC Bank",
+  "file": "banks-india/hdfc-bank.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Banks - India",
+  "name": "ICICI Bank",
+  "file": "banks-india/icici-bank.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Banks - India",
+  "name": "Axis Bank",
+  "file": "banks-india/axis-bank.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Banks - India",
+  "name": "HSBC",
+  "file": "banks-india/hsbc.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Banks - India",
+  "name": "Citibank",
+  "file": "banks-india/citibank.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Banks - India",
+  "name": "Citi",
+  "file": "banks-india/citi.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Banks - India",
+  "name": "Deutsche Bank",
+  "file": "banks-india/deutsche-bank.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Banks - India",
+  "name": "Bank of America",
+  "file": "banks-india/bank-of-america.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Banks - India",
+  "name": "Barclays",
+  "file": "banks-india/barclays.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Banks - India",
+  "name": "Slice",
+  "file": "banks-india/slice.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "Chase",
+  "file": "banks-global/chase.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "Bank of America",
+  "file": "banks-global/bank-of-america.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "Wells Fargo",
+  "file": "banks-global/wells-fargo.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "Citibank",
+  "file": "banks-global/citibank.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "Goldman Sachs",
+  "file": "banks-global/goldman-sachs.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "U.S. Bank",
+  "file": "banks-global/u-s-bank.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "US Bank",
+  "file": "banks-global/us-bank.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "Capital One",
+  "file": "banks-global/capital-one.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "American Express",
+  "file": "banks-global/american-express.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "Barclays",
+  "file": "banks-global/barclays.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "NatWest",
+  "file": "banks-global/natwest.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "HSBC",
+  "file": "banks-global/hsbc.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "Monzo",
+  "file": "banks-global/monzo.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "Starling Bank",
+  "file": "banks-global/starling-bank.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "Revolut",
+  "file": "banks-global/revolut.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "N26",
+  "file": "banks-global/n26.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "Wise",
+  "file": "banks-global/wise.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "Nubank",
+  "file": "banks-global/nubank.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "Deutsche Bank",
+  "file": "banks-global/deutsche-bank.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "Commerzbank",
+  "file": "banks-global/commerzbank.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "SoFi",
+  "file": "banks-global/sofi.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "Charles Schwab",
+  "file": "banks-global/charles-schwab.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "Fidelity",
+  "file": "banks-global/fidelity.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "Vanguard",
+  "file": "banks-global/vanguard.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "E*TRADE",
+  "file": "banks-global/e-trade.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "Robinhood",
+  "file": "banks-global/robinhood.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "Interactive Brokers",
+  "file": "banks-global/interactive-brokers.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Card Networks & Issuers",
+  "name": "Visa",
+  "file": "card-networks-and-issuers/visa.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Card Networks & Issuers",
+  "name": "Mastercard",
+  "file": "card-networks-and-issuers/mastercard.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Card Networks & Issuers",
+  "name": "American Express",
+  "file": "card-networks-and-issuers/american-express.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Card Networks & Issuers",
+  "name": "Amex",
+  "file": "card-networks-and-issuers/amex.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Card Networks & Issuers",
+  "name": "Discover",
+  "file": "card-networks-and-issuers/discover.svg",
+  "source": "gilbarbara",
+  "type": "color"
+ },
+ {
+  "category": "Card Networks & Issuers",
+  "name": "Diners Club",
+  "file": "card-networks-and-issuers/diners-club.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Card Networks & Issuers",
+  "name": "JCB",
+  "file": "card-networks-and-issuers/jcb.svg",
+  "source": "gilbarbara",
+  "type": "color"
+ },
+ {
+  "category": "Card Networks & Issuers",
+  "name": "UnionPay",
+  "file": "card-networks-and-issuers/unionpay.svg",
+  "source": "gilbarbara",
+  "type": "color"
+ },
+ {
+  "category": "Card Networks & Issuers",
+  "name": "Maestro",
+  "file": "card-networks-and-issuers/maestro.svg",
+  "source": "gilbarbara",
+  "type": "color"
+ },
+ {
+  "category": "Card Networks & Issuers",
+  "name": "Cirrus",
+  "file": "card-networks-and-issuers/cirrus.svg",
+  "source": "gilbarbara",
+  "type": "color"
+ },
+ {
+  "category": "Card Networks & Issuers",
+  "name": "Visa Electron",
+  "file": "card-networks-and-issuers/visa-electron.svg",
+  "source": "gilbarbara",
+  "type": "color"
+ },
+ {
+  "category": "Card Networks & Issuers",
+  "name": "Elo",
+  "file": "card-networks-and-issuers/elo.svg",
+  "source": "gilbarbara",
+  "type": "color"
+ },
+ {
+  "category": "Card Networks & Issuers",
+  "name": "Hipercard",
+  "file": "card-networks-and-issuers/hipercard.svg",
+  "source": "gilbarbara",
+  "type": "color"
+ },
+ {
+  "category": "Card Networks & Issuers",
+  "name": "Bancontact",
+  "file": "card-networks-and-issuers/bancontact.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "PayPal",
+  "file": "payments-wallets-and-upi/paypal.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "Stripe",
+  "file": "payments-wallets-and-upi/stripe.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "Razorpay",
+  "file": "payments-wallets-and-upi/razorpay.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "Paytm",
+  "file": "payments-wallets-and-upi/paytm.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "PhonePe",
+  "file": "payments-wallets-and-upi/phonepe.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "Google Pay",
+  "file": "payments-wallets-and-upi/google-pay.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "GPay",
+  "file": "payments-wallets-and-upi/gpay.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "Apple Pay",
+  "file": "payments-wallets-and-upi/apple-pay.svg",
+  "source": "gilbarbara",
+  "type": "color"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "Samsung Pay",
+  "file": "payments-wallets-and-upi/samsung-pay.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "Amazon Pay",
+  "file": "payments-wallets-and-upi/amazon-pay.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "Cash App",
+  "file": "payments-wallets-and-upi/cash-app.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "Venmo",
+  "file": "payments-wallets-and-upi/venmo.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "Zelle",
+  "file": "payments-wallets-and-upi/zelle.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "Wise",
+  "file": "payments-wallets-and-upi/wise.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "Payoneer",
+  "file": "payments-wallets-and-upi/payoneer.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "Alipay",
+  "file": "payments-wallets-and-upi/alipay.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "Square",
+  "file": "payments-wallets-and-upi/square.svg",
+  "source": "gilbarbara",
+  "type": "color"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "Adyen",
+  "file": "payments-wallets-and-upi/adyen.svg",
+  "source": "gilbarbara",
+  "type": "color"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "Braintree",
+  "file": "payments-wallets-and-upi/braintree.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "Klarna",
+  "file": "payments-wallets-and-upi/klarna.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "Afterpay",
+  "file": "payments-wallets-and-upi/afterpay.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "Western Union",
+  "file": "payments-wallets-and-upi/western-union.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "MoneyGram",
+  "file": "payments-wallets-and-upi/moneygram.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "MercadoPago",
+  "file": "payments-wallets-and-upi/mercadopago.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "Mercado Pago",
+  "file": "payments-wallets-and-upi/mercado-pago.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "PagSeguro",
+  "file": "payments-wallets-and-upi/pagseguro.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "Paysafe",
+  "file": "payments-wallets-and-upi/paysafe.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "Google Wallet",
+  "file": "payments-wallets-and-upi/google-wallet.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "Pix",
+  "file": "payments-wallets-and-upi/pix.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "SEPA",
+  "file": "payments-wallets-and-upi/sepa.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "SWIFT",
+  "file": "payments-wallets-and-upi/swift.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Investing, Brokers & Crypto",
+  "name": "Zerodha",
+  "file": "investing-brokers-and-crypto/zerodha.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Investing, Brokers & Crypto",
+  "name": "TradingView",
+  "file": "investing-brokers-and-crypto/tradingview.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Investing, Brokers & Crypto",
+  "name": "CoinMarketCap",
+  "file": "investing-brokers-and-crypto/coinmarketcap.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Investing, Brokers & Crypto",
+  "name": "Coinbase",
+  "file": "investing-brokers-and-crypto/coinbase.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Investing, Brokers & Crypto",
+  "name": "Binance",
+  "file": "investing-brokers-and-crypto/binance.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Investing, Brokers & Crypto",
+  "name": "Kraken",
+  "file": "investing-brokers-and-crypto/kraken.svg",
+  "source": "gilbarbara",
+  "type": "color"
+ },
+ {
+  "category": "Investing, Brokers & Crypto",
+  "name": "KuCoin",
+  "file": "investing-brokers-and-crypto/kucoin.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Investing, Brokers & Crypto",
+  "name": "WazirX",
+  "file": "investing-brokers-and-crypto/wazirx.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Investing, Brokers & Crypto",
+  "name": "Bitcoin",
+  "file": "investing-brokers-and-crypto/bitcoin.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Investing, Brokers & Crypto",
+  "name": "Ethereum",
+  "file": "investing-brokers-and-crypto/ethereum.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Investing, Brokers & Crypto",
+  "name": "Tether",
+  "file": "investing-brokers-and-crypto/tether.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Investing, Brokers & Crypto",
+  "name": "Solana",
+  "file": "investing-brokers-and-crypto/solana.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Investing, Brokers & Crypto",
+  "name": "XRP",
+  "file": "investing-brokers-and-crypto/xrp.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Investing, Brokers & Crypto",
+  "name": "Ripple",
+  "file": "investing-brokers-and-crypto/ripple.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Investing, Brokers & Crypto",
+  "name": "Dogecoin",
+  "file": "investing-brokers-and-crypto/dogecoin.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Investing, Brokers & Crypto",
+  "name": "Litecoin",
+  "file": "investing-brokers-and-crypto/litecoin.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Investing, Brokers & Crypto",
+  "name": "Cardano",
+  "file": "investing-brokers-and-crypto/cardano.svg",
+  "source": "gilbarbara",
+  "type": "color"
+ },
+ {
+  "category": "Investing, Brokers & Crypto",
+  "name": "Polygon",
+  "file": "investing-brokers-and-crypto/polygon.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Investing, Brokers & Crypto",
+  "name": "BNB Chain",
+  "file": "investing-brokers-and-crypto/bnb-chain.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Investing, Brokers & Crypto",
+  "name": "Polkadot",
+  "file": "investing-brokers-and-crypto/polkadot.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Investing, Brokers & Crypto",
+  "name": "Chainlink",
+  "file": "investing-brokers-and-crypto/chainlink.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Investing, Brokers & Crypto",
+  "name": "MetaMask",
+  "file": "investing-brokers-and-crypto/metamask.svg",
+  "source": "gilbarbara",
+  "type": "color"
+ },
+ {
+  "category": "Investing, Brokers & Crypto",
+  "name": "Trezor",
+  "file": "investing-brokers-and-crypto/trezor.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Investing, Brokers & Crypto",
+  "name": "OpenSea",
+  "file": "investing-brokers-and-crypto/opensea.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Insurance & Lending",
+  "name": "Progressive",
+  "file": "insurance-and-lending/progressive.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Finance & Accounting Apps",
+  "name": "Intuit",
+  "file": "finance-and-accounting-apps/intuit.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Finance & Accounting Apps",
+  "name": "QuickBooks",
+  "file": "finance-and-accounting-apps/quickbooks.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Finance & Accounting Apps",
+  "name": "Xero",
+  "file": "finance-and-accounting-apps/xero.svg",
+  "source": "gilbarbara",
+  "type": "color"
+ },
+ {
+  "category": "Finance & Accounting Apps",
+  "name": "FreshBooks",
+  "file": "finance-and-accounting-apps/freshbooks.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Finance & Accounting Apps",
+  "name": "Zoho",
+  "file": "finance-and-accounting-apps/zoho.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Finance & Accounting Apps",
+  "name": "Sage",
+  "file": "finance-and-accounting-apps/sage.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Finance & Accounting Apps",
+  "name": "Expensify",
+  "file": "finance-and-accounting-apps/expensify.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Finance & Accounting Apps",
+  "name": "YNAB",
+  "file": "finance-and-accounting-apps/ynab.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Finance & Accounting Apps",
+  "name": "Actual Budget",
+  "file": "finance-and-accounting-apps/actual-budget.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Finance & Accounting Apps",
+  "name": "Firefly III",
+  "file": "finance-and-accounting-apps/firefly-iii.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Finance & Accounting Apps",
+  "name": "Maybe",
+  "file": "finance-and-accounting-apps/maybe.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Finance & Accounting Apps",
+  "name": "Wallos",
+  "file": "finance-and-accounting-apps/wallos.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Finance & Accounting Apps",
+  "name": "Gusto",
+  "file": "finance-and-accounting-apps/gusto.svg",
+  "source": "gilbarbara",
+  "type": "color"
+ },
+ {
+  "category": "Finance & Accounting Apps",
+  "name": "Brex",
+  "file": "finance-and-accounting-apps/brex.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Finance & Accounting Apps",
+  "name": "Ramp",
+  "file": "finance-and-accounting-apps/ramp.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Finance & Accounting Apps",
+  "name": "Notion",
+  "file": "finance-and-accounting-apps/notion.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Finance & Accounting Apps",
+  "name": "Airtable",
+  "file": "finance-and-accounting-apps/airtable.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Finance & Accounting Apps",
+  "name": "Google Sheets",
+  "file": "finance-and-accounting-apps/google-sheets.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Finance & Accounting Apps",
+  "name": "Microsoft Excel",
+  "file": "finance-and-accounting-apps/microsoft-excel.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Telecom, Utilities & Broadband",
+  "name": "Airtel",
+  "file": "telecom-utilities-and-broadband/airtel.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Telecom, Utilities & Broadband",
+  "name": "Jio",
+  "file": "telecom-utilities-and-broadband/jio.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Telecom, Utilities & Broadband",
+  "name": "Vodafone",
+  "file": "telecom-utilities-and-broadband/vodafone.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Telecom, Utilities & Broadband",
+  "name": "Vi",
+  "file": "telecom-utilities-and-broadband/vi.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Telecom, Utilities & Broadband",
+  "name": "Hathway",
+  "file": "telecom-utilities-and-broadband/hathway.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Telecom, Utilities & Broadband",
+  "name": "Shell",
+  "file": "telecom-utilities-and-broadband/shell.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Telecom, Utilities & Broadband",
+  "name": "Tata",
+  "file": "telecom-utilities-and-broadband/tata.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Telecom, Utilities & Broadband",
+  "name": "Verizon",
+  "file": "telecom-utilities-and-broadband/verizon.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Telecom, Utilities & Broadband",
+  "name": "AT&T",
+  "file": "telecom-utilities-and-broadband/atandt.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Telecom, Utilities & Broadband",
+  "name": "T-Mobile",
+  "file": "telecom-utilities-and-broadband/t-mobile.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Telecom, Utilities & Broadband",
+  "name": "Xfinity",
+  "file": "telecom-utilities-and-broadband/xfinity.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Telecom, Utilities & Broadband",
+  "name": "Spectrum",
+  "file": "telecom-utilities-and-broadband/spectrum.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Telecom, Utilities & Broadband",
+  "name": "Orange",
+  "file": "telecom-utilities-and-broadband/orange.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Telecom, Utilities & Broadband",
+  "name": "Telefonica",
+  "file": "telecom-utilities-and-broadband/telefonica.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Telecom, Utilities & Broadband",
+  "name": "Deutsche Telekom",
+  "file": "telecom-utilities-and-broadband/deutsche-telekom.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Amazon",
+  "file": "shopping-food-and-travel/amazon.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Flipkart",
+  "file": "shopping-food-and-travel/flipkart.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Swiggy",
+  "file": "shopping-food-and-travel/swiggy.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Zomato",
+  "file": "shopping-food-and-travel/zomato.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "BigBasket",
+  "file": "shopping-food-and-travel/bigbasket.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Dunzo",
+  "file": "shopping-food-and-travel/dunzo.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Uber",
+  "file": "shopping-food-and-travel/uber.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Uber Eats",
+  "file": "shopping-food-and-travel/uber-eats.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Lyft",
+  "file": "shopping-food-and-travel/lyft.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Bolt",
+  "file": "shopping-food-and-travel/bolt.svg",
+  "source": "gilbarbara",
+  "type": "color"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Grab",
+  "file": "shopping-food-and-travel/grab.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Gojek",
+  "file": "shopping-food-and-travel/gojek.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Booking.com",
+  "file": "shopping-food-and-travel/booking-com.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Airbnb",
+  "file": "shopping-food-and-travel/airbnb.svg",
+  "source": "gilbarbara",
+  "type": "color"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Expedia",
+  "file": "shopping-food-and-travel/expedia.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Tripadvisor",
+  "file": "shopping-food-and-travel/tripadvisor.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "OYO",
+  "file": "shopping-food-and-travel/oyo.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Indigo",
+  "file": "shopping-food-and-travel/indigo.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Air India",
+  "file": "shopping-food-and-travel/air-india.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Akasa Air",
+  "file": "shopping-food-and-travel/akasa-air.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Emirates",
+  "file": "shopping-food-and-travel/emirates.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Qatar Airways",
+  "file": "shopping-food-and-travel/qatar-airways.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Lufthansa",
+  "file": "shopping-food-and-travel/lufthansa.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "British Airways",
+  "file": "shopping-food-and-travel/british-airways.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Delta",
+  "file": "shopping-food-and-travel/delta.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "American Airlines",
+  "file": "shopping-food-and-travel/american-airlines.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "BookMyShow",
+  "file": "shopping-food-and-travel/bookmyshow.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "KFC",
+  "file": "shopping-food-and-travel/kfc.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "McDonald's",
+  "file": "shopping-food-and-travel/mcdonald-s.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Starbucks",
+  "file": "shopping-food-and-travel/starbucks.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Burger King",
+  "file": "shopping-food-and-travel/burger-king.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Walmart",
+  "file": "shopping-food-and-travel/walmart.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Target",
+  "file": "shopping-food-and-travel/target.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Costco",
+  "file": "shopping-food-and-travel/costco.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "IKEA",
+  "file": "shopping-food-and-travel/ikea.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Nike",
+  "file": "shopping-food-and-travel/nike.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Adidas",
+  "file": "shopping-food-and-travel/adidas.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Puma",
+  "file": "shopping-food-and-travel/puma.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Zara",
+  "file": "shopping-food-and-travel/zara.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "H&M",
+  "file": "shopping-food-and-travel/handm.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Uniqlo",
+  "file": "shopping-food-and-travel/uniqlo.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Apollo",
+  "file": "shopping-food-and-travel/apollo.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "eBay",
+  "file": "shopping-food-and-travel/ebay.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Etsy",
+  "file": "shopping-food-and-travel/etsy.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "AliExpress",
+  "file": "shopping-food-and-travel/aliexpress.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Alibaba",
+  "file": "shopping-food-and-travel/alibaba.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Shopify",
+  "file": "shopping-food-and-travel/shopify.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Gumroad",
+  "file": "shopping-food-and-travel/gumroad.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Temu",
+  "file": "shopping-food-and-travel/temu.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Rakuten",
+  "file": "shopping-food-and-travel/rakuten.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Zalando",
+  "file": "shopping-food-and-travel/zalando.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Tesco",
+  "file": "shopping-food-and-travel/tesco.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Carrefour",
+  "file": "shopping-food-and-travel/carrefour.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Lidl",
+  "file": "shopping-food-and-travel/lidl.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Google",
+  "file": "software-cloud-and-subscriptions/google.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Microsoft",
+  "file": "software-cloud-and-subscriptions/microsoft.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Apple",
+  "file": "software-cloud-and-subscriptions/apple.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "iCloud",
+  "file": "software-cloud-and-subscriptions/icloud.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Google Drive",
+  "file": "software-cloud-and-subscriptions/google-drive.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Google One",
+  "file": "software-cloud-and-subscriptions/google-one.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Dropbox",
+  "file": "software-cloud-and-subscriptions/dropbox.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Microsoft 365",
+  "file": "software-cloud-and-subscriptions/microsoft-365.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Office 365",
+  "file": "software-cloud-and-subscriptions/office-365.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Adobe",
+  "file": "software-cloud-and-subscriptions/adobe.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Adobe Creative Cloud",
+  "file": "software-cloud-and-subscriptions/adobe-creative-cloud.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Canva",
+  "file": "software-cloud-and-subscriptions/canva.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Figma",
+  "file": "software-cloud-and-subscriptions/figma.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "OpenAI",
+  "file": "software-cloud-and-subscriptions/openai.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "ChatGPT",
+  "file": "software-cloud-and-subscriptions/chatgpt.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Claude",
+  "file": "software-cloud-and-subscriptions/claude.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Anthropic",
+  "file": "software-cloud-and-subscriptions/anthropic.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Perplexity",
+  "file": "software-cloud-and-subscriptions/perplexity.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "GitHub",
+  "file": "software-cloud-and-subscriptions/github.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "GitHub Copilot",
+  "file": "software-cloud-and-subscriptions/github-copilot.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "GitLab",
+  "file": "software-cloud-and-subscriptions/gitlab.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Notion",
+  "file": "software-cloud-and-subscriptions/notion.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Slack",
+  "file": "software-cloud-and-subscriptions/slack.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Zoom",
+  "file": "software-cloud-and-subscriptions/zoom.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Microsoft Teams",
+  "file": "software-cloud-and-subscriptions/microsoft-teams.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Google Meet",
+  "file": "software-cloud-and-subscriptions/google-meet.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Proton",
+  "file": "software-cloud-and-subscriptions/proton.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Proton VPN",
+  "file": "software-cloud-and-subscriptions/proton-vpn.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "NordVPN",
+  "file": "software-cloud-and-subscriptions/nordvpn.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "ExpressVPN",
+  "file": "software-cloud-and-subscriptions/expressvpn.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Surfshark",
+  "file": "software-cloud-and-subscriptions/surfshark.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "LastPass",
+  "file": "software-cloud-and-subscriptions/lastpass.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "1Password",
+  "file": "software-cloud-and-subscriptions/1password.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Bitwarden",
+  "file": "software-cloud-and-subscriptions/bitwarden.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Dashlane",
+  "file": "software-cloud-and-subscriptions/dashlane.svg",
+  "source": "gilbarbara",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Grammarly",
+  "file": "software-cloud-and-subscriptions/grammarly.svg",
+  "source": "gilbarbara",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Duolingo",
+  "file": "software-cloud-and-subscriptions/duolingo.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Coursera",
+  "file": "software-cloud-and-subscriptions/coursera.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Udemy",
+  "file": "software-cloud-and-subscriptions/udemy.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Skillshare",
+  "file": "software-cloud-and-subscriptions/skillshare.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "LinkedIn",
+  "file": "software-cloud-and-subscriptions/linkedin.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Medium",
+  "file": "software-cloud-and-subscriptions/medium.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Substack",
+  "file": "software-cloud-and-subscriptions/substack.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Patreon",
+  "file": "software-cloud-and-subscriptions/patreon.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Tinder",
+  "file": "software-cloud-and-subscriptions/tinder.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Twitter",
+  "file": "software-cloud-and-subscriptions/twitter.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "X",
+  "file": "software-cloud-and-subscriptions/x.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "TikTok",
+  "file": "software-cloud-and-subscriptions/tiktok.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Instagram",
+  "file": "software-cloud-and-subscriptions/instagram.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Facebook",
+  "file": "software-cloud-and-subscriptions/facebook.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Meta",
+  "file": "software-cloud-and-subscriptions/meta.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "WhatsApp",
+  "file": "software-cloud-and-subscriptions/whatsapp.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Telegram",
+  "file": "software-cloud-and-subscriptions/telegram.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Snapchat",
+  "file": "software-cloud-and-subscriptions/snapchat.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Pinterest",
+  "file": "software-cloud-and-subscriptions/pinterest.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Reddit",
+  "file": "software-cloud-and-subscriptions/reddit.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Discord",
+  "file": "software-cloud-and-subscriptions/discord.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "AWS",
+  "file": "software-cloud-and-subscriptions/aws.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Amazon Web Services",
+  "file": "software-cloud-and-subscriptions/amazon-web-services.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Google Cloud",
+  "file": "software-cloud-and-subscriptions/google-cloud.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Azure",
+  "file": "software-cloud-and-subscriptions/azure.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Microsoft Azure",
+  "file": "software-cloud-and-subscriptions/microsoft-azure.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "DigitalOcean",
+  "file": "software-cloud-and-subscriptions/digitalocean.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Heroku",
+  "file": "software-cloud-and-subscriptions/heroku.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Vercel",
+  "file": "software-cloud-and-subscriptions/vercel.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Netlify",
+  "file": "software-cloud-and-subscriptions/netlify.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Cloudflare",
+  "file": "software-cloud-and-subscriptions/cloudflare.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "GoDaddy",
+  "file": "software-cloud-and-subscriptions/godaddy.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Namecheap",
+  "file": "software-cloud-and-subscriptions/namecheap.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Hostinger",
+  "file": "software-cloud-and-subscriptions/hostinger.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "WordPress",
+  "file": "software-cloud-and-subscriptions/wordpress.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Wix",
+  "file": "software-cloud-and-subscriptions/wix.svg",
+  "source": "gilbarbara",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Squarespace",
+  "file": "software-cloud-and-subscriptions/squarespace.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Samsung",
+  "file": "software-cloud-and-subscriptions/samsung.svg",
+  "source": "gilbarbara",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Sony",
+  "file": "software-cloud-and-subscriptions/sony.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "LG",
+  "file": "software-cloud-and-subscriptions/lg.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Xiaomi",
+  "file": "software-cloud-and-subscriptions/xiaomi.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "OnePlus",
+  "file": "software-cloud-and-subscriptions/oneplus.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Oppo",
+  "file": "software-cloud-and-subscriptions/oppo.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Vivo",
+  "file": "software-cloud-and-subscriptions/vivo.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Nokia",
+  "file": "software-cloud-and-subscriptions/nokia.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Motorola",
+  "file": "software-cloud-and-subscriptions/motorola.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Huawei",
+  "file": "software-cloud-and-subscriptions/huawei.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Dell",
+  "file": "software-cloud-and-subscriptions/dell.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "HP",
+  "file": "software-cloud-and-subscriptions/hp.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Lenovo",
+  "file": "software-cloud-and-subscriptions/lenovo.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Asus",
+  "file": "software-cloud-and-subscriptions/asus.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Acer",
+  "file": "software-cloud-and-subscriptions/acer.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Intel",
+  "file": "software-cloud-and-subscriptions/intel.svg",
+  "source": "gilbarbara",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "AMD",
+  "file": "software-cloud-and-subscriptions/amd.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Nvidia",
+  "file": "software-cloud-and-subscriptions/nvidia.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Tesla",
+  "file": "software-cloud-and-subscriptions/tesla.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Fitbit",
+  "file": "software-cloud-and-subscriptions/fitbit.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Strava",
+  "file": "software-cloud-and-subscriptions/strava.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Peloton",
+  "file": "software-cloud-and-subscriptions/peloton.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Garmin",
+  "file": "software-cloud-and-subscriptions/garmin.svg",
+  "source": "dashboard-icons",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Headspace",
+  "file": "software-cloud-and-subscriptions/headspace.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Hyundai",
+  "file": "software-cloud-and-subscriptions/hyundai.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Honda",
+  "file": "software-cloud-and-subscriptions/honda.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Toyota",
+  "file": "software-cloud-and-subscriptions/toyota.svg",
+  "source": "selfhst",
+  "type": "color"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Mahindra",
+  "file": "software-cloud-and-subscriptions/mahindra.svg",
+  "source": "simple-icons",
+  "type": "brand-color-mono"
+ },
+ {
+  "category": "Card Networks & Issuers",
+  "name": "alipay (flat card)",
+  "file": "card-networks-and-issuers/cc-alipay.svg",
+  "source": "svg-credit-card-payment-icons",
+  "type": "card-face"
+ },
+ {
+  "category": "Card Networks & Issuers",
+  "name": "amex (flat card)",
+  "file": "card-networks-and-issuers/cc-amex.svg",
+  "source": "svg-credit-card-payment-icons",
+  "type": "card-face"
+ },
+ {
+  "category": "Card Networks & Issuers",
+  "name": "diners (flat card)",
+  "file": "card-networks-and-issuers/cc-diners.svg",
+  "source": "svg-credit-card-payment-icons",
+  "type": "card-face"
+ },
+ {
+  "category": "Card Networks & Issuers",
+  "name": "discover (flat card)",
+  "file": "card-networks-and-issuers/cc-discover.svg",
+  "source": "svg-credit-card-payment-icons",
+  "type": "card-face"
+ },
+ {
+  "category": "Card Networks & Issuers",
+  "name": "elo (flat card)",
+  "file": "card-networks-and-issuers/cc-elo.svg",
+  "source": "svg-credit-card-payment-icons",
+  "type": "card-face"
+ },
+ {
+  "category": "Card Networks & Issuers",
+  "name": "generic (flat card)",
+  "file": "card-networks-and-issuers/cc-generic.svg",
+  "source": "svg-credit-card-payment-icons",
+  "type": "card-face"
+ },
+ {
+  "category": "Card Networks & Issuers",
+  "name": "hiper (flat card)",
+  "file": "card-networks-and-issuers/cc-hiper.svg",
+  "source": "svg-credit-card-payment-icons",
+  "type": "card-face"
+ },
+ {
+  "category": "Card Networks & Issuers",
+  "name": "hipercard (flat card)",
+  "file": "card-networks-and-issuers/cc-hipercard.svg",
+  "source": "svg-credit-card-payment-icons",
+  "type": "card-face"
+ },
+ {
+  "category": "Card Networks & Issuers",
+  "name": "jcb (flat card)",
+  "file": "card-networks-and-issuers/cc-jcb.svg",
+  "source": "svg-credit-card-payment-icons",
+  "type": "card-face"
+ },
+ {
+  "category": "Card Networks & Issuers",
+  "name": "maestro (flat card)",
+  "file": "card-networks-and-issuers/cc-maestro.svg",
+  "source": "svg-credit-card-payment-icons",
+  "type": "card-face"
+ },
+ {
+  "category": "Card Networks & Issuers",
+  "name": "mastercard (flat card)",
+  "file": "card-networks-and-issuers/cc-mastercard.svg",
+  "source": "svg-credit-card-payment-icons",
+  "type": "card-face"
+ },
+ {
+  "category": "Card Networks & Issuers",
+  "name": "mir (flat card)",
+  "file": "card-networks-and-issuers/cc-mir.svg",
+  "source": "svg-credit-card-payment-icons",
+  "type": "card-face"
+ },
+ {
+  "category": "Card Networks & Issuers",
+  "name": "paypal (flat card)",
+  "file": "card-networks-and-issuers/cc-paypal.svg",
+  "source": "svg-credit-card-payment-icons",
+  "type": "card-face"
+ },
+ {
+  "category": "Card Networks & Issuers",
+  "name": "unionpay (flat card)",
+  "file": "card-networks-and-issuers/cc-unionpay.svg",
+  "source": "svg-credit-card-payment-icons",
+  "type": "card-face"
+ },
+ {
+  "category": "Card Networks & Issuers",
+  "name": "visa (flat card)",
+  "file": "card-networks-and-issuers/cc-visa.svg",
+  "source": "svg-credit-card-payment-icons",
+  "type": "card-face"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "Discovery+",
+  "file": "ott-and-streaming/discovery-plus.svg",
+  "source": "thesvg (CC-BY-ND-2.0)",
+  "type": "brand"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "Pluto TV",
+  "file": "ott-and-streaming/pluto-tv.svg",
+  "source": "thesvg (Unlicense)",
+  "type": "brand"
+ },
+ {
+  "category": "OTT & Streaming",
+  "name": "ESPN",
+  "file": "ott-and-streaming/espn.svg",
+  "source": "thesvg (Fair Use)",
+  "type": "brand"
+ },
+ {
+  "category": "Banks - India",
+  "name": "Punjab National Bank",
+  "file": "banks-india/punjab-national-bank.svg",
+  "source": "thesvg (CC0-1.0)",
+  "type": "brand"
+ },
+ {
+  "category": "Banks - India",
+  "name": "Standard Chartered",
+  "file": "banks-india/standard-chartered.svg",
+  "source": "thesvg (CC0-1.0)",
+  "type": "brand"
+ },
+ {
+  "category": "Banks - India",
+  "name": "Fi Money",
+  "file": "banks-india/fi-money.svg",
+  "source": "thesvg (CC0-1.0)",
+  "type": "brand"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "JPMorgan Chase",
+  "file": "banks-global/jpmorgan-chase.svg",
+  "source": "thesvg (CC0-1.0)",
+  "type": "brand"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "Morgan Stanley",
+  "file": "banks-global/morgan-stanley.svg",
+  "source": "thesvg (Fair Use)",
+  "type": "brand"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "Santander",
+  "file": "banks-global/santander.svg",
+  "source": "thesvg (CC0-1.0)",
+  "type": "brand"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "BBVA",
+  "file": "banks-global/bbva.svg",
+  "source": "thesvg (CC0-1.0)",
+  "type": "brand"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "ING",
+  "file": "banks-global/ing.svg",
+  "source": "thesvg (CC0-1.0)",
+  "type": "brand"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "Credit Suisse",
+  "file": "banks-global/credit-suisse.svg",
+  "source": "thesvg (CC0-1.0)",
+  "type": "brand"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "BNP Paribas",
+  "file": "banks-global/bnp-paribas.svg",
+  "source": "thesvg (CC0-1.0)",
+  "type": "brand"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "ABN AMRO",
+  "file": "banks-global/abn-amro.svg",
+  "source": "thesvg (Unknown)",
+  "type": "brand"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "Nordea",
+  "file": "banks-global/nordea.svg",
+  "source": "thesvg (Unknown)",
+  "type": "brand"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "Westpac",
+  "file": "banks-global/westpac.svg",
+  "source": "thesvg (CC0-1.0)",
+  "type": "brand"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "Commonwealth Bank",
+  "file": "banks-global/commonwealth-bank.svg",
+  "source": "thesvg (CC0-1.0)",
+  "type": "brand"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "NAB",
+  "file": "banks-global/nab.svg",
+  "source": "thesvg (Fair Use)",
+  "type": "brand"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "Standard Chartered",
+  "file": "banks-global/standard-chartered.svg",
+  "source": "thesvg (CC0-1.0)",
+  "type": "brand"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "Maybank",
+  "file": "banks-global/maybank.svg",
+  "source": "thesvg (CC0-1.0)",
+  "type": "brand"
+ },
+ {
+  "category": "Banks - Global",
+  "name": "Chime",
+  "file": "banks-global/chime.svg",
+  "source": "thesvg (Fair Use)",
+  "type": "brand"
+ },
+ {
+  "category": "Card Networks & Issuers",
+  "name": "Mir",
+  "file": "card-networks-and-issuers/mir.svg",
+  "source": "thesvg (brand-use)",
+  "type": "brand"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "UPI",
+  "file": "payments-wallets-and-upi/upi.svg",
+  "source": "thesvg (Custom)",
+  "type": "brand"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "Skrill",
+  "file": "payments-wallets-and-upi/skrill.svg",
+  "source": "thesvg (CC0-1.0)",
+  "type": "brand"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "Mollie",
+  "file": "payments-wallets-and-upi/mollie.svg",
+  "source": "thesvg (CC0-1.0)",
+  "type": "brand"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "Affirm",
+  "file": "payments-wallets-and-upi/affirm.svg",
+  "source": "thesvg (Fair Use)",
+  "type": "brand"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "Plaid",
+  "file": "payments-wallets-and-upi/plaid.svg",
+  "source": "thesvg (Fair Use)",
+  "type": "brand"
+ },
+ {
+  "category": "Payments, Wallets & UPI",
+  "name": "Maya",
+  "file": "payments-wallets-and-upi/maya.svg",
+  "source": "thesvg (MIT)",
+  "type": "brand"
+ },
+ {
+  "category": "Investing, Brokers & Crypto",
+  "name": "Bybit",
+  "file": "investing-brokers-and-crypto/bybit.svg",
+  "source": "thesvg (brand-use)",
+  "type": "brand"
+ },
+ {
+  "category": "Investing, Brokers & Crypto",
+  "name": "Gemini",
+  "file": "investing-brokers-and-crypto/gemini.svg",
+  "source": "thesvg (MIT)",
+  "type": "brand"
+ },
+ {
+  "category": "Investing, Brokers & Crypto",
+  "name": "Avalanche",
+  "file": "investing-brokers-and-crypto/avalanche.svg",
+  "source": "thesvg (CC0-1.0)",
+  "type": "brand"
+ },
+ {
+  "category": "Investing, Brokers & Crypto",
+  "name": "Tron",
+  "file": "investing-brokers-and-crypto/tron.svg",
+  "source": "thesvg (MIT)",
+  "type": "brand"
+ },
+ {
+  "category": "Investing, Brokers & Crypto",
+  "name": "USD Coin",
+  "file": "investing-brokers-and-crypto/usd-coin.svg",
+  "source": "thesvg (Trademark)",
+  "type": "brand"
+ },
+ {
+  "category": "Investing, Brokers & Crypto",
+  "name": "Ledger",
+  "file": "investing-brokers-and-crypto/ledger.svg",
+  "source": "thesvg (Trademark of Ledger SAS. Used for identification under nominative fair use.)",
+  "type": "brand"
+ },
+ {
+  "category": "Investing, Brokers & Crypto",
+  "name": "Phantom",
+  "file": "investing-brokers-and-crypto/phantom.svg",
+  "source": "thesvg (Trademark of Phantom Technologies, Inc.. Used for identification under nominative fair use.)",
+  "type": "brand"
+ },
+ {
+  "category": "Insurance & Lending",
+  "name": "AXA",
+  "file": "insurance-and-lending/axa.svg",
+  "source": "thesvg (CC0-1.0)",
+  "type": "brand"
+ },
+ {
+  "category": "Insurance & Lending",
+  "name": "Aviva",
+  "file": "insurance-and-lending/aviva.svg",
+  "source": "thesvg (CC0-1.0)",
+  "type": "brand"
+ },
+ {
+  "category": "Insurance & Lending",
+  "name": "MetLife",
+  "file": "insurance-and-lending/metlife.svg",
+  "source": "thesvg (CC0-1.0)",
+  "type": "brand"
+ },
+ {
+  "category": "Finance & Accounting Apps",
+  "name": "Mint",
+  "file": "finance-and-accounting-apps/mint.svg",
+  "source": "thesvg (brand-use)",
+  "type": "brand"
+ },
+ {
+  "category": "Finance & Accounting Apps",
+  "name": "Copilot",
+  "file": "finance-and-accounting-apps/copilot.svg",
+  "source": "thesvg (Trademark of Microsoft Corporation. Used for identification under nominative fair use.)",
+  "type": "brand"
+ },
+ {
+  "category": "Finance & Accounting Apps",
+  "name": "H&R Block",
+  "file": "finance-and-accounting-apps/handr-block.svg",
+  "source": "thesvg (CC0-1.0)",
+  "type": "brand"
+ },
+ {
+  "category": "Finance & Accounting Apps",
+  "name": "Rippling",
+  "file": "finance-and-accounting-apps/rippling.svg",
+  "source": "thesvg (Trademark)",
+  "type": "brand"
+ },
+ {
+  "category": "Finance & Accounting Apps",
+  "name": "Carta",
+  "file": "finance-and-accounting-apps/carta.svg",
+  "source": "thesvg (CC0-1.0)",
+  "type": "brand"
+ },
+ {
+  "category": "Telecom, Utilities & Broadband",
+  "name": "Etisalat",
+  "file": "telecom-utilities-and-broadband/etisalat.svg",
+  "source": "thesvg (CC0-1.0)",
+  "type": "brand"
+ },
+ {
+  "category": "Telecom, Utilities & Broadband",
+  "name": "STC",
+  "file": "telecom-utilities-and-broadband/stc.svg",
+  "source": "thesvg (CC0-1.0)",
+  "type": "brand"
+ },
+ {
+  "category": "Telecom, Utilities & Broadband",
+  "name": "Telstra",
+  "file": "telecom-utilities-and-broadband/telstra.svg",
+  "source": "thesvg (CC0-1.0)",
+  "type": "brand"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "MakeMyTrip",
+  "file": "shopping-food-and-travel/makemytrip.svg",
+  "source": "thesvg (CC0-1.0)",
+  "type": "brand"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Domino's",
+  "file": "shopping-food-and-travel/domino-s.svg",
+  "source": "thesvg (Fair Use)",
+  "type": "brand"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Pizza Hut",
+  "file": "shopping-food-and-travel/pizza-hut.svg",
+  "source": "thesvg (Fair Use)",
+  "type": "brand"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Subway",
+  "file": "shopping-food-and-travel/subway.svg",
+  "source": "thesvg (Fair Use)",
+  "type": "brand"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Home Depot",
+  "file": "shopping-food-and-travel/home-depot.svg",
+  "source": "thesvg (Fair Use)",
+  "type": "brand"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Decathlon",
+  "file": "shopping-food-and-travel/decathlon.svg",
+  "source": "thesvg (CC0-1.0)",
+  "type": "brand"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Mercado Libre",
+  "file": "shopping-food-and-travel/mercado-libre.svg",
+  "source": "thesvg (MIT)",
+  "type": "brand"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Best Buy",
+  "file": "shopping-food-and-travel/best-buy.svg",
+  "source": "thesvg (Fair Use)",
+  "type": "brand"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Lowe's",
+  "file": "shopping-food-and-travel/lowe-s.svg",
+  "source": "thesvg (Fair Use)",
+  "type": "brand"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Walgreens",
+  "file": "shopping-food-and-travel/walgreens.svg",
+  "source": "thesvg (Fair Use)",
+  "type": "brand"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "CVS",
+  "file": "shopping-food-and-travel/cvs.svg",
+  "source": "thesvg (Fair Use)",
+  "type": "brand"
+ },
+ {
+  "category": "Shopping, Food & Travel",
+  "name": "Kroger",
+  "file": "shopping-food-and-travel/kroger.svg",
+  "source": "thesvg (Fair Use)",
+  "type": "brand"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Gemini",
+  "file": "software-cloud-and-subscriptions/gemini.svg",
+  "source": "thesvg (MIT)",
+  "type": "brand"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Copilot",
+  "file": "software-cloud-and-subscriptions/copilot.svg",
+  "source": "thesvg (Trademark of Microsoft Corporation. Used for identification under nominative fair use.)",
+  "type": "brand"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Kindle",
+  "file": "software-cloud-and-subscriptions/kindle.svg",
+  "source": "thesvg (Fair use)",
+  "type": "brand"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Bluehost",
+  "file": "software-cloud-and-subscriptions/bluehost.svg",
+  "source": "thesvg (CC0-1.0)",
+  "type": "brand"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Whoop",
+  "file": "software-cloud-and-subscriptions/whoop.svg",
+  "source": "thesvg (Trademark)",
+  "type": "brand"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Maruti Suzuki",
+  "file": "software-cloud-and-subscriptions/maruti-suzuki.svg",
+  "source": "thesvg (CC0-1.0)",
+  "type": "brand"
+ },
+ {
+  "category": "Software, Cloud & Subscriptions",
+  "name": "Hero MotoCorp",
+  "file": "software-cloud-and-subscriptions/hero-motocorp.svg",
+  "source": "thesvg (CC0-1.0)",
+  "type": "brand"
+ }
+]

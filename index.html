@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SmartFinTrack</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css?v=29">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="shell" id="shell">
+  <aside class="rail">
+    <div class="brand"><span class="mark"></span><span class="lbl">Smart<em>Fin</em>Track</span></div>
+    <nav id="tabs">
+      <button data-view="overview" class="active"><i>01</i><span>Dashboard</span></button>
+      <button data-view="transactions"><i>02</i><span>Ledger</span></button>
+      <button data-view="budgets"><i>03</i><span>Budgets</span></button>
+      <button data-view="investments"><i>04</i><span>Investments</span></button>
+      <button data-view="networth"><i>05</i><span>Net worth</span></button>
+      <button data-view="goals"><i>06</i><span>Goals</span></button>
+      <button data-view="subs"><i>07</i><span>Subscriptions</span></button>
+    </nav>
+    <div class="railnote card" id="railNote"></div>
+    <button id="collapseBtn" class="ghost collapse"><span class="lbl">Collapse sidebar</span><span class="ico">«</span></button>
+  </aside>
+
+  <div class="content">
+    <header class="topbar">
+      <input id="q" class="search" type="search" placeholder="Search transactions…" autocomplete="off">
+      <div class="topright">
+        <button id="wallBtn" class="iconbtn" title="Change background" aria-label="Change background">🖼</button>
+        <button id="themeBtn" class="iconbtn" aria-label="Toggle light or dark theme"></button>
+        <button id="bell" class="iconbtn" title="Budget alerts" aria-label="Budget alerts">🔔<span id="bellDot" class="dotbadge" hidden></span></button>
+        <span id="modeBadge" class="badge"></span>
+        <span id="userName" class="chip"></span>
+        <button id="authBtn" class="ghost" hidden></button>
+      </div>
+    </header>
+    <div id="wallPop" class="wallpop" hidden></div>
+    <main id="app"><p class="muted">Loading…</p></main>
+  </div>
+</div>
+<script src="js/firebase-config.js?v=30"></script>
+  <script src="js/icon-index.js?v=29"></script>
+<script src="js/app.js?v=29"></script>
+<script src="js/import.js?v=29"></script>
+</body>
+</html>

@@ -1,0 +1,315 @@
+Logos still not found (add as icons/<name>.svg or .png):
+
+5paisa
+99acres
+Aadhaar
+ACH
+Acko
+Adani Electricity
+Adani Gas
+ADCB
+Aditya Birla
+Agoda
+Ajio
+Al Rajhi Bank
+Aldi
+Alice Blue
+Allianz
+Allstate
+Ally
+Ally Bank
+ALTBalaji
+Angel One
+Anghami
+ANZ
+Axos
+Bajaj
+Bajaj Allianz
+Bajaj Finance
+Bajaj Finserv
+Bell
+BESCOM
+BGMI
+Bharat Gas
+Bharat Petroleum
+BHIM
+Bill.com
+BillDesk
+Blinkit
+Bloomberg
+BMO
+BP
+BritBox
+BSE
+BSES
+BSNL
+Bumble
+Calm
+Care Health
+Carte Bancaire
+Cartes Bancaires
+Cashfree
+Cashfree Payments
+CCAvenue
+CDSL
+Checkout.com
+China Construction Bank
+CIBC
+CIBIL
+CIMB
+Citizens
+Cleartax
+ClearTax
+Cleartrip
+Coin by Zerodha
+CoinDCX
+CoinGecko
+CoinSwitch
+Comcast
+CRIF
+Croma
+Crypto.com
+Cult.fit
+Curiosity Stream
+Current
+d2h
+Dankort
+Danske Bank
+Dave
+Deel
+Dhan
+Digilocker
+DigiLocker
+Digit Insurance
+Dish TV
+DMart
+Dream11
+du
+EarlySalary
+Easebuzz
+EaseMyTrip
+Edelweiss
+Edward Jones
+Empower
+EPFO
+Equifax
+Eros Now
+ET Money
+Etherscan
+Excel
+Excitel
+EXIM Bank
+Experian
+FASTag
+Fedwire
+Fibe
+Flutterwave
+Free Fire
+Freecharge
+Fyers
+Gaana
+Games24x7
+Garena
+GCash
+GeForce Now
+GEICO
+Generali
+GoCardless
+GOG
+Goibibo
+GrabPay
+Groww
+GST
+Hindustan Petroleum
+Hinge
+Hoichoi
+Hotstar
+Housing.com
+Hungama
+Hungama Music
+ICBC
+IIFL
+Income Tax India
+Indane
+INDmoney
+Indraprastha Gas
+INOX
+Instamart
+Instamojo
+Interac
+Intesa Sanpaolo
+Investopedia
+IRCTC
+ixigo
+JioCinema
+JioFiber
+JioHotstar
+JioMart
+JioMoney
+JioSaavn
+JioTV
+Jupiter
+Juspay
+Kakao Pay
+Kreditbee
+Kuvera
+L&T Finance
+Lazypay
+Lemonade
+Lendingkart
+Lenskart
+LIC
+LIC Housing Finance
+Lionsgate Play
+Lloyds Bank
+Ludo King
+Lunch Money
+M-Pesa
+MagicBricks
+Mahanagar Gas
+Manappuram
+Marcus
+MasterClass
+Meesho
+Meeza
+Mercury
+Merrill
+Mirae Asset
+MobiKwik
+Monarch
+Money Manager
+Moneycontrol
+MoneyView
+Morningstar
+Motilal Oswal
+Mpesa
+MPL
+MSEDCL
+MTNL
+Muthoot Finance
+MX Player
+My11Circle
+Myntra
+NABARD
+Naver Pay
+Navi
+Neteller
+Netmeds
+New India Assurance
+NHAI
+Nippon India
+Niva Bupa
+Niyo
+NoBroker
+Nomura
+Now TV
+NPCI
+NPS
+NSDL
+NSDL Payments Bank
+NSE
+Nykaa
+OCBC
+Ola
+OneCard
+OneDrive
+Open Money
+Oura
+PAN
+PayPay
+PaySend
+Paysense
+Paystack
+PayU
+Personal Capital
+PharmEasy
+Pine Labs
+Ping An
+Piramal
+PNC
+Policybazaar
+Postpe
+Practo
+Prudential
+PVR
+QNB
+Quicken
+Rapido
+RBC
+RBI
+Realme
+redBus
+Reliance
+Reliance Digital
+Reliance Jio
+Reliance Nippon
+Remitly
+Reserve Bank of India
+Resso
+Ria
+Rogers
+Royal Bank of Canada
+Royal Enfield
+Rummy Circle
+RuPay
+Screener
+SEBI
+Sharekhan
+Shein
+Shriram Finance
+Shudder
+SIDBI
+Simpl
+Singtel
+Smallcase
+SMBC
+Societe Generale
+SonyLIV
+SpiceJet
+Splitwise
+Star Health
+Sun Direct
+Sun NXT
+Swedbank
+Tally
+TD Ameritrade
+TD Bank
+Tink
+Torrent Power
+Touch n Go
+TransUnion
+Troy
+TrueLayer
+Truist
+TurboTax
+TVS Motor
+UBS
+UIDAI
+UMANG
+UniCredit
+Uniswap
+UOB
+Upstox
+Urban Company
+Vakilsearch
+Varo
+Verve
+Videocon d2h
+Viki
+Vistara
+Voot
+Walnut
+Wave
+Webull
+WeChat Pay
+Worldpay
+Wynk Music
+Xoom
+Yahoo Finance
+Zaggle
+ZEE5
+Zepto
+ZestMoney
+Zupee
+Zurich
+Zynga
