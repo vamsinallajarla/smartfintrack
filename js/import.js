@@ -133,7 +133,7 @@ function impBuildFile(f) {
 
 // own-account transfers: an expense in one file matched by an income of the same amount (±3 days) in another file,
 // or a description that clearly says self / own account / card bill payment. Flagged and left unticked.
-const IMP_XFER_RE = /\b(self|own a\/?c|own account|a\/c transfer|acct transfer|fund transfer|trf to self|transfer to self|credit card (bill )?pay|cc pay|card payment|autopay|ccpay|billdesk.*card|to savings|from savings|sweep|rd instal|fd (creat|clos|mat))/i;
+const IMP_XFER_RE = /\b(self|own a\/?c|own account|a\/c transfer|acct transfer|fund transfer|trf to self|transfer to self|credit card (bill )?pay|cc pay|card payment|autopay|ccpay|billdesk.*card|to savings|from savings|sweep|rd instal|fd (creat|clos|mat)|closure proceeds|maturity proceeds|premature closure|(fd|rd|deposit) (closure|maturity|booking|opening))/i;
 function impMarkTransfers(all) {
   all.forEach((t) => { t.xfer = IMP_XFER_RE.test(t.note) ? "keyword" : ""; });
   const day = (d) => Date.parse(d + "T00:00:00Z") / 864e5;
