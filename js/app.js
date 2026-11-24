@@ -159,7 +159,7 @@ async function resetDemo() {
 
 const INCOME_CATS = ["Salary", "Business", "Interest", "Other"];
 const XFER_CATS = ["Own account", "Loan repayment", "Card bill", "FD / RD"];
-const ACCT_ROLES = ["Savings", "Salary", "Current", "Loan", "Other"];
+const ACCT_ROLES = ["Savings", "Salary", "Current", "UPI spend", "Loan", "Other"];
 const EXPENSE_CATS = ["Food", "Rent", "Transport", "Utilities", "Shopping", "Health", "Entertainment", "Subscriptions", "Other"];
 const INV_TYPES = ["Stock", "Mutual Fund", "FD", "RD", "Fixed Income", "Gold", "Crypto", "Other"];
 const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
