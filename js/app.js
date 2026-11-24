@@ -208,9 +208,9 @@ let charts = [];
 const mixW = (h, t) => { const m = /^#?([0-9a-f]{6})$/i.exec(String(h).trim()); if (!m) return h; const n = parseInt(m[1], 16); const f = (c) => Math.round(c + (255 - c) * t); return `rgb(${f((n >> 16) & 255)},${f((n >> 8) & 255)},${f(n & 255)})`; };
 const lighten = mixW;
 const gradBg = (cols) => (ctx) => {
-  const col = Array.isArray(cols) ? cols[ctx.dataIndex % cols.length] : cols;
+  const col = Array.isArray(cols) ? cols[(ctx.dataIndex || 0) % cols.length] : cols;
   const a = ctx.chart.chartArea;
-  if (!a) return col;
+  if (!a || !col) return col || "#888";
   const g = ctx.chart.ctx.createLinearGradient(0, a.top, 0, a.bottom);
   g.addColorStop(0, mixW(col, 0.2)); g.addColorStop(1, col);
   return g;
@@ -235,7 +235,7 @@ function chart(id, cfg) {
     animation: { duration: 1100, easing: "easeOutQuart", delay: (c) => (c.type === "data" && c.mode === "default" ? c.dataIndex * 70 : 0) },
     ...(cfg.options || {}) };
   cfg.plugins = [...(cfg.plugins || []), glowPlugin];
-  charts.push(new Chart(el, cfg));
+  try { charts.push(new Chart(el, cfg)); } catch (e) { console.error("Chart failed:", e); } // never let a chart error stop the page's forms from binding
 }
 
 function lastMonths(n) {
