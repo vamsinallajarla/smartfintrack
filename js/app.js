@@ -7,6 +7,7 @@ const mode = configured ? "firebase" : "demo";
 const COLS = ["transactions", "budgets", "investments", "accounts", "goals", "cards", "subs"];
 const data = { transactions: [], budgets: [], investments: [], accounts: [], goals: [], cards: [], subs: [] };
 let user = null;
+let authReady = false;
 
 const listeners = new Set();
 const onChange = (fn) => listeners.add(fn);
@@ -95,7 +96,7 @@ async function init() {
   const a = app.initializeApp(firebaseConfig);
   fb = { auth: auth.getAuth(a), db: fs.getFirestore(a), ...auth, ...fs };
   fb.onAuthStateChanged(fb.auth, (u) => {
-    user = u;
+    user = u; authReady = true;
     unsubs.forEach((f) => f()); unsubs = [];
     COLS.forEach((c) => (data[c] = []));
     if (u) {
@@ -1094,9 +1095,29 @@ function renderFilters() {
   if ($("typeF")) { $("typeF").onchange = (e) => { F.type = e.target.value; go(); }; $("catF").onchange = (e) => { F.cat = e.target.value; go(); }; }
 }
 
+function showLogin() {
+  document.body.classList.add("signedout");
+  let p = document.getElementById("loginPage");
+  if (!p) {
+    p = document.createElement("div"); p.id = "loginPage";
+    p.innerHTML = `<div class="loginbox">
+      <div class="brand"><span class="mark"></span><span class="lbl">Smart<em>Fin</em>Track</span></div>
+      <h1>Welcome back</h1>
+      <p class="muted">Sign in to see your finances. Your data is private to your Google account.</p>
+      <button type="button" class="gbtn" id="loginGo"><svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.9 2.4 30.4 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.6 5.9c4.4-4.1 7-10.1 7-17.6z"/><path fill="#FBBC05" d="M10.5 28.7a14.5 14.5 0 0 1 0-9.4l-7.9-6.1a24 24 0 0 0 0 21.6l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.6-5.9c-2.1 1.4-4.9 2.3-8.3 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg><span>Continue with Google</span></button>
+      <p class="muted sm loginnote" id="loginNote"></p>
+    </div>`;
+    document.body.appendChild(p);
+    document.getElementById("loginGo").onclick = () => login();
+  }
+  document.getElementById("loginGo").hidden = !authReady;
+  document.getElementById("loginNote").textContent = authReady ? "We only use your Google account to keep your data separate and private." : "Checking sign-in…";
+}
+
 let lastView = null;
 function render() {
   saveFilters();
+  if (!(mode === "firebase" && !user)) document.body.classList.remove("signedout");
   const keepScroll = lastView === view ? [...$app.querySelectorAll(".scroll")].map((n) => n.scrollTop) : [];
   charts.forEach((c) => c.destroy()); charts = [];
   const $id = (x) => document.getElementById(x);
@@ -1113,7 +1134,7 @@ function render() {
     authBtn.hidden = false;
     authBtn.textContent = user ? "Sign out" : "Sign in with Google";
     authBtn.onclick = user ? logout : login;
-    if (!user) { $app.innerHTML = `<div class="empty card"><h2>Sign in to see your finances</h2><p class="muted">Your data is private to your Google account.</p></div>`; return; }
+    if (!user) { showLogin(); return; }
   } else {
     authBtn.hidden = false; authBtn.textContent = "Reset demo data";
     authBtn.onclick = () => confirm("Reset to sample data?") && resetDemo();

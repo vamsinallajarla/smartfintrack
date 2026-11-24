@@ -755,3 +755,16 @@ nav button.active i { color: inherit; opacity: 1; }
 .acctag { margin-left: 6px; padding: 1px 7px; border-radius: 999px; font-size: 10.5px; color: var(--muted); border: 1px solid color-mix(in srgb, var(--muted) 40%, transparent); white-space: nowrap; }
 
 .impdump { max-height: 160px; overflow: auto; font-size: 11px; white-space: pre-wrap; padding: 8px; border-radius: 8px; background: rgba(0,0,0,.18); user-select: all; }
+
+/* dedicated sign-in page */
+#loginPage { display: none; position: fixed; inset: 0; z-index: 90; align-items: center; justify-content: center; padding: 20px; }
+body.signedout #loginPage { display: flex; }
+body.signedout .shell, body.signedout #wallPop { display: none; }
+.loginbox { width: min(400px, 100%); text-align: center; padding: 38px 32px 30px; border-radius: 22px; background: rgba(14, 18, 34, .42); border: 1px solid rgba(255,255,255,.18); backdrop-filter: blur(18px) saturate(1.2); -webkit-backdrop-filter: blur(18px) saturate(1.2); box-shadow: 0 20px 60px rgba(0,0,0,.35); color: #fff; }
+.loginbox .brand { justify-content: center; font-size: 24px; margin-bottom: 22px; }
+.loginbox h1 { font-family: Fraunces, serif; font-weight: 600; font-size: 26px; margin: 0 0 8px; }
+.loginbox .muted { color: rgba(255,255,255,.72); margin: 0 0 22px; }
+.loginbox .loginnote { margin: 18px 0 0; font-size: 12px; }
+.gbtn { display: inline-flex; align-items: center; justify-content: center; gap: 12px; width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,.3); background: #fff; color: #1f1f1f; font: 600 15px "Instrument Sans", system-ui, sans-serif; cursor: pointer; transition: transform .12s, box-shadow .12s; }
+.gbtn:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(0,0,0,.3); }
+.gbtn[hidden] { display: none; }
