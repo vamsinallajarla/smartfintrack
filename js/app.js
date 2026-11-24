@@ -140,18 +140,37 @@ async function login() {
 const logout = () => fb.signOut(fb.auth);
 
 // ---------- CRUD ----------
+const APP_BUILD = 43;
+// run a Firebase write; show the real reason on screen instead of failing silently
+async function fbWrite(what, fn) {
+  try { return await fn(); }
+  catch (e) {
+    console.error("Save failed:", what, e);
+    const code = e && (e.code || e.message) || "unknown";
+    authToast(`Couldn't ${what}: ${code}` + (/permission/.test(code) ? "\nFirestore rules rejected the write. Check you are signed in and the rules are published." : ""));
+    throw e;
+  }
+}
 async function add(col, obj) {
   if (mode === "demo") { data[col].push({ id: uid(), ...obj }); saveLocal(); emit(); return; }
-  await fb.addDoc(fb.collection(fb.db, "users", user.uid, col), obj);
+  if (!user) { authToast("You are signed out. Sign in again to save."); return; }
+  await fbWrite("save to " + col, () => fb.addDoc(fb.collection(fb.db, "users", user.uid, col), obj));
 }
 async function remove(col, id) {
   if (mode === "demo") { data[col] = data[col].filter((x) => x.id !== id); saveLocal(); emit(); return; }
-  await fb.deleteDoc(fb.doc(fb.db, "users", user.uid, col, id));
+  await fbWrite("delete from " + col, () => fb.deleteDoc(fb.doc(fb.db, "users", user.uid, col, id)));
 }
 async function update(col, id, patch) {
   if (mode === "demo") { const x = data[col].find((r) => r.id === id); if (x) Object.assign(x, patch); saveLocal(); emit(); return; }
-  await fb.updateDoc(fb.doc(fb.db, "users", user.uid, col, id), patch);
+  await fbWrite("update " + col, () => fb.updateDoc(fb.doc(fb.db, "users", user.uid, col, id), patch));
 }
+// safety net: a form without a working handler must never reload the page
+document.addEventListener("submit", (e) => {
+  if (e.defaultPrevented) return;
+  e.preventDefault();
+  console.error("Form submitted without a handler", e.target);
+  authToast("This page didn't finish loading (build " + APP_BUILD + "). Press Ctrl+Shift+R and try again. If it repeats, tell me what the browser console shows.");
+});
 async function resetDemo() {
   if (mode !== "demo") return;
   localStorage.removeItem(LS_KEY); seedDemo(); emit();
@@ -1127,6 +1146,7 @@ function render() {
   $id("railNote").innerHTML = mode === "demo"
     ? "<b>Demo data</b>You're viewing sample data stored in this browser. Add your Firebase config to save your own."
     : "<b>Synced</b>Your data is stored privately in Firebase.";
+  $id("railNote").innerHTML += `<div class="muted sm" style="margin-top:6px;opacity:.7">Build ${APP_BUILD}</div>`;
   const ob = overBudget();
   $id("bellDot").hidden = !ob.length; $id("bellDot").textContent = ob.length;
   $id("bell").title = ob.length ? `${ob.length} budget(s) exceeded` : "No budget alerts";
@@ -1142,7 +1162,11 @@ function render() {
   $app.classList.add("fit");
   $app.dataset.view = view;
   $app.classList.toggle("enter", animateNext);
-  views[view]();
+  try { views[view](); }
+  catch (e) {
+    console.error("View failed:", view, e);
+    $app.innerHTML = `<div class="empty card"><h2>This page hit an error</h2><p class="muted">${esc(e && e.message || e)}</p></div>`;
+  }
   $app.querySelectorAll(".scroll").forEach((n, k) => { if (keepScroll[k]) n.scrollTop = keepScroll[k]; });
   lastView = view;
   if (["overview", "transactions", "budgets"].includes(view)) renderFilters();
