@@ -131,6 +131,20 @@ function impBuildFile(f) {
   f.items = out;
 }
 
+// own-account transfers: an expense in one file matched by an income of the same amount (±3 days) in another file,
+// or a description that clearly says self / own account / card bill payment. Flagged and left unticked.
+const IMP_XFER_RE = /\b(self|own a\/?c|own account|a\/c transfer|acct transfer|fund transfer|trf to self|transfer to self|credit card (bill )?pay|cc pay|card payment|autopay|ccpay|billdesk.*card|to savings|from savings|sweep|rd instal|fd (creat|clos|mat))/i;
+function impMarkTransfers(all) {
+  all.forEach((t) => { t.xfer = IMP_XFER_RE.test(t.note) ? "keyword" : ""; });
+  const day = (d) => Date.parse(d + "T00:00:00Z") / 864e5;
+  const inc = all.filter((t) => t.type === "income");
+  const used = new Set();
+  all.filter((t) => t.type === "expense").forEach((e) => {
+    const m = inc.find((i) => !used.has(i) && i.file !== e.file && i.amount === e.amount && Math.abs(day(i.date) - day(e.date)) <= 3);
+    if (m) { used.add(m); e.xfer = m.xfer = "paired"; }
+  });
+}
+
 // merge every file's rows; flag rows already in the ledger (date + type + amount), honouring multiplicity
 function impMerge() {
   const all = imp.files.flatMap((f) => f.items);
@@ -138,10 +152,11 @@ function impMerge() {
   data.transactions.forEach((t) => { const k = `${t.date}|${t.type}|${Number(t.amount).toFixed(2)}`; seen[k] = (seen[k] || 0) + 1; });
   const key = (t) => `${t.date}|${t.type}|${t.amount.toFixed(2)}`;
   all.filter((t) => t.checked && t.dup).forEach((t) => { if (seen[key(t)] > 0) seen[key(t)]--; });
+  impMarkTransfers(all);
   all.filter((t) => !t.checked).forEach((t) => {
     t.checked = true;
     if (seen[key(t)] > 0) { seen[key(t)]--; t.dup = true; } else t.dup = false;
-    t.on = !t.dup;
+    t.on = !t.dup && !t.xfer;
   });
   imp.items = all.sort((a, b) => b.date.localeCompare(a.date));
 }
@@ -348,12 +363,12 @@ function impStep2() {
       </details>`).join("")}
       <button type="button" class="ghost sm" id="impMore">+ Add more files</button><input type="file" id="impMoreIn" accept=".csv,.txt,.xlsx,.xls,.pdf" multiple hidden>
     </div>
-    <p class="muted sm">${items.length} transaction${items.length === 1 ? "" : "s"} from ${imp.files.length} file${imp.files.length === 1 ? "" : "s"}${dups ? ` · <b>${dups} already in your ledger</b> (unticked)` : ""}</p>
+    <p class="muted sm">${items.length} transaction${items.length === 1 ? "" : "s"} from ${imp.files.length} file${imp.files.length === 1 ? "" : "s"}${dups ? ` · <b>${dups} already in your ledger</b> (unticked)` : ""}${items.some((t) => t.xfer) ? ` · <b>${items.filter((t) => t.xfer).length} look like own-account transfers</b> (unticked, tick any you want)` : ""}</p>
     ${items.length ? `<div class="scroll impscroll"><table class="imptable"><thead><tr><th><input type="checkbox" id="impAll" ${on.length === items.length ? "checked" : ""}></th><th>Date</th>${multi ? "<th>Account</th>" : ""}<th>Type</th><th>Category</th><th>Description</th><th class="num">Amount</th></tr></thead>
-      <tbody>${shown.map((t, i) => `<tr class="${t.dup ? "dup" : ""}"><td><input type="checkbox" data-on="${i}" ${t.on ? "checked" : ""}></td><td>${esc(t.date)}</td>${multi ? `<td class="muted">${esc(t.account)}</td>` : ""}
+      <tbody>${shown.map((t, i) => `<tr class="${t.dup || t.xfer ? "dup" : ""}"><td><input type="checkbox" data-on="${i}" ${t.on ? "checked" : ""}></td><td>${esc(t.date)}</td>${multi ? `<td class="muted">${esc(t.account)}</td>` : ""}
         <td><select data-ty="${i}"><option${t.type === "expense" ? " selected" : ""}>expense</option><option${t.type === "income" ? " selected" : ""}>income</option></select></td>
         <td><select data-cat="${i}">${opts(t.type === "income" ? INCOME_CATS : EXPENSE_CATS, t.category)}</select></td>
-        <td class="impdesc" title="${esc(t.note)}">${esc(t.note)}${t.dup ? ' <span class="pill">duplicate</span>' : ""}</td>
+        <td class="impdesc" title="${esc(t.note)}">${esc(t.note)}${t.dup ? ' <span class="pill">duplicate</span>' : ""}${t.xfer ? ` <span class="pill" title="${t.xfer === "paired" ? "Matching entry in another imported account" : "Description looks like a transfer or card bill payment"}">transfer</span>` : ""}</td>
         <td class="num ${t.type === "income" ? "good" : "bad"}">${t.type === "income" ? "+" : "−"}${fmt(t.amount)}</td></tr>`).join("")}</tbody></table></div>
       ${items.length > shown.length ? `<p class="muted sm">Showing the first ${shown.length} rows; all ${items.length} are imported.</p>` : ""}`
     : `<p class="bad">No transactions recognised yet. Open a file above and check its column mapping (a Date column and a Debit/Credit or Amount column are needed).</p>`}
