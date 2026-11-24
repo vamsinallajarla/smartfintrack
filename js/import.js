@@ -175,7 +175,7 @@ async function impLoadPDFJS() {
   window.pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(new Blob([code], { type: "text/javascript" }));
 }
 
-const IMP_DATE_START = /^\s*(\d{4}-\d{2}-\d{2}|\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4}|\d{1,2}[\s\-]+[A-Za-z]{3,9}[\s\-,]+\d{2,4})(?=\s|$)/;
+const IMP_DATE_START = /^\s*(?:\d{1,5}\s+)?(\d{4}-\d{2}-\d{2}|\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4}|\d{1,2}[\s\-]+[A-Za-z]{3,9}[\s\-,]+\d{2,4})(?=\s|$)/;
 const IMP_AMT = /^\(?-?₹?(?:Rs\.?)?\s?\d[\d,]*\.\d{2}\)?(?:\s?(?:Cr|Dr|CR|DR))?$/;
 
 async function impReadPdf(file) {
@@ -187,13 +187,14 @@ async function impReadPdf(file) {
     catch (e) {
       if (e && e.name === "PasswordException" && tries < 3) {
         pwd = window.prompt(`${file.name} is password protected. Enter the password (often your customer ID, date of birth or PAN):`);
-        if (pwd == null) throw new Error(`${file.name}: password needed`);
-      } else if (e && e.name === "PasswordException") throw new Error(`${file.name}: wrong password`);
-      else throw new Error(`${file.name}: not a readable PDF`);
+        if (pwd == null) throw new Error("password needed");
+      } else if (e && e.name === "PasswordException") throw new Error("wrong password");
+      else throw new Error("not a readable PDF");
     }
   }
   const out = [["Date", "Description", "Withdrawal", "Deposit", "Amount", "Dr/Cr"]];
   let cols = null, prevBal = null, last = null, textChars = 0;
+  const dump = [];
   for (let p = 1; p <= pdf.numPages; p++) {
     const tc = await (await pdf.getPage(p)).getTextContent();
     const items = tc.items.filter((i) => i.str && i.str.trim()).map((i) => ({ s: i.str.trim(), x: i.transform[4], y: i.transform[5], w: i.width || i.str.length * 5 }));
@@ -207,14 +208,19 @@ async function impReadPdf(file) {
       ln.t.sort((a, b) => a.x - b.x);
       const text = ln.t.map((t) => t.s).join(" ");
       const low = text.toLowerCase();
+      if (dump.length < 40) dump.push(text.slice(0, 160));
       // header line: remember where the debit / credit / balance columns sit
       if (/(withdraw|debit|paid out)/.test(low) && /(deposit|credit|paid in)/.test(low)) {
-        const c = {}, mid = (t) => t.x + t.w / 2;
-        ln.t.forEach((t) => {
-          const w = t.s.toLowerCase();
-          if (/withdraw|debit|paid out|^dr/.test(w) && c.d == null) c.d = mid(t);
-          else if (/deposit|credit|paid in|^cr/.test(w) && c.c == null) c.c = mid(t);
-          else if (/balance/.test(w)) c.b = mid(t);
+        // PDF text items can be merged ("Deposit Amount Balance"), so position every character along the line
+        const chars = [];
+        ln.t.forEach((t) => { for (let i = 0; i < t.s.length; i++) chars.push({ ch: t.s[i], x: t.x + (t.w * i) / t.s.length }); chars.push({ ch: " ", x: t.x + t.w }); });
+        const str = chars.map((c) => c.ch).join("").toLowerCase();
+        const found = [["d", str.search(/withdraw|debit|paid out/)], ["c", str.search(/deposit|credit|paid in/)], ["b", str.search(/balance/)]]
+          .filter((k) => k[1] >= 0).sort((a, b) => a[1] - b[1]);
+        const c = {};
+        found.forEach((k, i) => {
+          const start = chars[k[1]].x, end = i + 1 < found.length ? chars[found[i + 1][1]].x : chars[chars.length - 1].x;
+          c[k[0]] = (start + end) / 2;
         });
         if (c.d != null && c.c != null) { cols = c; continue; }
       }
@@ -224,35 +230,41 @@ async function impReadPdf(file) {
         if (!amts.length) { last = { date: dm[1], desc: text.slice(dm[0].length).trim(), cells: [] }; out.push(null); out[out.length - 1] = last.row = [dm[1], last.desc, "", "", "", ""]; continue; }
         const descToks = ln.t.filter((t) => !IMP_AMT.test(t.s));
         let desc = descToks.map((t) => t.s).join(" ").slice(dm[0].length).trim();
-        const clean = desc.split(/\s+/).filter((w) => !/^\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4}$/.test(w) && !/^\d{6,}$/.test(w)).join(" "); // drop value date + cheque/ref numbers
+        const clean = desc.split(/\s+/).filter((w) => !/^\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4}$/.test(w) && !/^\d{6,}$/.test(w) && w !== "-").join(" "); // drop value date + cheque/ref numbers
         if (clean) desc = clean;
         const row = [dm[1], desc, "", "", "", ""];
         const val = (t) => t.s.replace(/[^\d.]/g, "");
-        if (cols) {
+        const nums = amts.map((t) => ({ v: parseFloat(val(t)), cr: /cr$/i.test(t.s), dr: /dr$/i.test(t.s), neg: /^\(|^-/.test(t.s) }));
+        let done = false;
+        if (nums.length >= 2 && prevBal != null) { // last amount = running balance: its change tells money in vs out
+          const bal = nums[nums.length - 1].v, tx = nums.slice(0, -1).reduce((a, n) => a + n.v, 0);
+          if (tx > 0 && Math.abs(prevBal + tx - bal) < 0.02) { row[3] = String(tx); done = true; }
+          else if (tx > 0 && Math.abs(prevBal - tx - bal) < 0.02) { row[2] = String(tx); done = true; }
+        }
+        if (!done && cols) {
           const colsX = [["d", cols.d], ["c", cols.c], ["b", cols.b]].filter((k) => k[1] != null);
           amts.forEach((t) => {
             const m = t.x + t.w / 2, best = colsX.reduce((a, b) => (Math.abs(b[1] - m) < Math.abs(a[1] - m) ? b : a));
-            if (best[0] === "d") row[2] = val(t); else if (best[0] === "c") row[3] = val(t); else prevBal = parseFloat(val(t));
+            if (best[0] === "d") row[2] = val(t); else if (best[0] === "c") row[3] = val(t);
           });
-        } else {
-          const nums = amts.map((t) => ({ v: parseFloat(val(t)), cr: /cr$/i.test(t.s), dr: /dr$/i.test(t.s), neg: /^\(|^-/.test(t.s) }));
-          if (nums.length >= 2 && prevBal != null) { // last = running balance, so the balance change tells the direction
-            const tx = nums[nums.length - 2].v, bal = nums[nums.length - 1].v;
-            if (Math.abs(prevBal + tx - bal) < 0.02) row[3] = String(tx); else if (Math.abs(prevBal - tx - bal) < 0.02) row[2] = String(tx); else row[4] = String(tx);
-            prevBal = bal;
-          } else if (nums.length >= 2) { row[4] = String(nums[nums.length - 2].v); prevBal = nums[nums.length - 1].v; row[5] = "?"; }
+          done = true;
+        }
+        if (!done) {
+          if (nums.length >= 2) { row[4] = String(nums[nums.length - 2].v); row[5] = ""; }
           else { const n = nums[0]; row[4] = String(n.neg ? -n.v : n.v); if (n.cr) row[5] = "CR"; else if (n.dr) row[5] = "DR"; }
         }
+        if (nums.length >= 2) prevBal = nums[nums.length - 1].v;
         out.push(row); last = { row };
       } else if (last && last.row && !amts.length && ln.t.length && !/page \d|statement|opening balance|closing balance|total/i.test(low) && last.row[1].length < 100) {
         last.row[1] = (last.row[1] + " " + text).replace(/\s+/g, " ").trim(); // narration continues on the next line
       }
     }
   }
-  if (textChars < 40) throw new Error(`${file.name}: no selectable text found (scanned PDF). Download CSV/Excel from net banking instead.`);
+  const fail = (m) => { const e = new Error(m); e.dump = dump.join("\n"); return e; };
+  if (textChars < 40) throw fail("no selectable text found (scanned PDF). Download CSV/Excel from net banking instead.");
   // rows where only the balance moved the other way are unknown: treat as unsigned amount
   out.forEach((r) => { if (r[5] === "?") r[5] = ""; });
-  if (out.length < 2) throw new Error(`${file.name}: no transaction rows recognised. Try the CSV/Excel download from net banking.`);
+  if (out.length < 2) throw fail("no transaction rows recognised. Try the CSV/Excel download from net banking, or send the text below so the reader can be adjusted.");
   return out;
 }
 
@@ -294,10 +306,12 @@ async function impAddFiles(list, errEl) {
       const f = { name: file.name, size: file.size, label: file.name.replace(/\.[^.]+$/, ""), rows, headerIdx: 0, map: {}, noSign: "expense", items: [] };
       f.headerIdx = impFindHeader(rows); f.map = impDetect(rows[f.headerIdx] || []);
       impBuildFile(f); imp.files.push(f);
-    } catch (e) { errs.push(`${file.name}: ${e.message || "could not be read"}`); }
+    } catch (e) { errs.push({ name: file.name, msg: e.message || "could not be read", dump: e.dump }); }
   }
   impMerge();
-  if (errs.length && errEl) errEl.textContent = errs.join(" · ");
+  if (errs.length && errEl) {
+    errEl.innerHTML = errs.map((x) => `<div><b>${esc(x.name)}</b>: ${esc(x.msg)}${x.dump ? `<details><summary>Show the text read from this PDF</summary><pre class="impdump">${esc(x.dump)}</pre><span class="muted sm">Blank out names and account numbers before sharing.</span></details>` : ""}</div>`).join("");
+  }
   return errs;
 }
 

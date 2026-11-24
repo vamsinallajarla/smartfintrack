@@ -753,3 +753,5 @@ nav button.active i { color: inherit; opacity: 1; }
 .impacct { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 11px; }
 .impacct input { width: 140px; padding: 3px 8px; font-size: 12px; }
 .acctag { margin-left: 6px; padding: 1px 7px; border-radius: 999px; font-size: 10.5px; color: var(--muted); border: 1px solid color-mix(in srgb, var(--muted) 40%, transparent); white-space: nowrap; }
+
+.impdump { max-height: 160px; overflow: auto; font-size: 11px; white-space: pre-wrap; padding: 8px; border-radius: 8px; background: rgba(0,0,0,.18); user-select: all; }
