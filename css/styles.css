@@ -737,3 +737,11 @@ main[data-view]:not([data-view="overview"]) .pill.ok, main[data-view]:not([data-
 .modal-acts .muted { margin-right: auto; }
 .imptoast { position: fixed; right: 18px; bottom: 18px; z-index: 120; padding: 10px 16px; border-radius: 12px; background: #1f6f54; color: #fff; box-shadow: 0 8px 24px rgba(0,0,0,.3); }
 @media (max-width: 700px) { .imp-grid { grid-template-columns: 1fr 1fr; } }
+
+/* SIDEBAR ICONS (replace the 01-07 numbers) */
+nav button { align-items: center; }
+nav button i { display: inline-grid; place-items: center; width: 22px; height: 22px; opacity: .8; flex: none; }
+nav button i svg { display: block; }
+nav button.active i { color: inherit; opacity: 1; }
+.shell.collapsed nav button { justify-content: center; }
+@media (max-width: 1180px) { nav button i { display: inline-grid; } }
