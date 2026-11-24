@@ -18,7 +18,7 @@ const IMP_INCOME_RULES = [
   ["Business", /invoice|client|consult|freelance|business/i],
 ];
 
-let imp = null; // current import session
+let imp = null; // current import session: { files:[{name,label,rows,headerIdx,map,noSign,items,err}], items:[] }
 
 // ---------- parsing helpers ----------
 function impParseCSV(text) {
@@ -98,8 +98,8 @@ function impGuess(desc, type) {
   return "Other";
 }
 
-function impBuild() {
-  const { rows, headerIdx, map, noSign } = imp;
+function impBuildFile(f) {
+  const { rows, headerIdx, map, noSign } = f;
   const out = [];
   const hasNeg = map.amount >= 0 && map.drcr < 0 && rows.slice(headerIdx + 1).some((r) => (impNum(r[map.amount]) || 0) < 0);
   for (let i = headerIdx + 1; i < rows.length; i++) {
@@ -126,13 +126,24 @@ function impBuild() {
     }
     if (!type || !(amt > 0)) continue;
     const note = String(g("desc") || "").replace(/\s+/g, " ").trim().slice(0, 120);
-    out.push({ date, type, amount: Math.round(amt * 100) / 100, note, category: impGuess(note, type) });
+    out.push({ date, type, amount: Math.round(amt * 100) / 100, note, category: impGuess(note, type), account: f.label, file: f });
   }
-  // duplicate detection against the ledger (date + type + amount), honouring multiplicity
+  f.items = out;
+}
+
+// merge every file's rows; flag rows already in the ledger (date + type + amount), honouring multiplicity
+function impMerge() {
+  const all = imp.files.flatMap((f) => f.items);
   const seen = {};
   data.transactions.forEach((t) => { const k = `${t.date}|${t.type}|${Number(t.amount).toFixed(2)}`; seen[k] = (seen[k] || 0) + 1; });
-  out.forEach((t) => { const k = `${t.date}|${t.type}|${t.amount.toFixed(2)}`; if (seen[k] > 0) { seen[k]--; t.dup = true; } t.on = !t.dup; });
-  imp.items = out;
+  const key = (t) => `${t.date}|${t.type}|${t.amount.toFixed(2)}`;
+  all.filter((t) => t.checked && t.dup).forEach((t) => { if (seen[key(t)] > 0) seen[key(t)]--; });
+  all.filter((t) => !t.checked).forEach((t) => {
+    t.checked = true;
+    if (seen[key(t)] > 0) { seen[key(t)]--; t.dup = true; } else t.dup = false;
+    t.on = !t.dup;
+  });
+  imp.items = all.sort((a, b) => b.date.localeCompare(a.date));
 }
 
 // ---------- UI ----------
@@ -146,7 +157,107 @@ function impLoadXLSX() {
   });
 }
 
+
+// ---------- PDF statements (text-based PDFs; scanned images are not supported) ----------
+const PDFJS_VER = "3.11.174";
+const PDFJS_BASE = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${PDFJS_VER}/build/`;
+async function impLoadPDFJS() {
+  if (window.pdfjsLib && window.pdfjsLib.GlobalWorkerOptions.workerSrc) return;
+  if (!window.pdfjsLib) {
+    await new Promise((res, rej) => {
+      const s = document.createElement("script"); s.src = PDFJS_BASE + "pdf.min.js"; s.onload = res;
+      s.onerror = () => rej(new Error("Could not load the PDF reader (needs internet). Download the statement as CSV/Excel instead."));
+      document.head.appendChild(s);
+    });
+  }
+  // load the worker through a blob so it also works when the page is opened from a file
+  const code = await (await fetch(PDFJS_BASE + "pdf.worker.min.js")).text();
+  window.pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(new Blob([code], { type: "text/javascript" }));
+}
+
+const IMP_DATE_START = /^\s*(\d{4}-\d{2}-\d{2}|\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4}|\d{1,2}[\s\-]+[A-Za-z]{3,9}[\s\-,]+\d{2,4})(?=\s|$)/;
+const IMP_AMT = /^\(?-?₹?(?:Rs\.?)?\s?\d[\d,]*\.\d{2}\)?(?:\s?(?:Cr|Dr|CR|DR))?$/;
+
+async function impReadPdf(file) {
+  await impLoadPDFJS();
+  const buf = await file.arrayBuffer();
+  let pdf, pwd;
+  for (let tries = 0; ; tries++) {
+    try { pdf = await pdfjsLib.getDocument({ data: buf.slice(0), password: pwd }).promise; break; }
+    catch (e) {
+      if (e && e.name === "PasswordException" && tries < 3) {
+        pwd = window.prompt(`${file.name} is password protected. Enter the password (often your customer ID, date of birth or PAN):`);
+        if (pwd == null) throw new Error(`${file.name}: password needed`);
+      } else if (e && e.name === "PasswordException") throw new Error(`${file.name}: wrong password`);
+      else throw new Error(`${file.name}: not a readable PDF`);
+    }
+  }
+  const out = [["Date", "Description", "Withdrawal", "Deposit", "Amount", "Dr/Cr"]];
+  let cols = null, prevBal = null, last = null, textChars = 0;
+  for (let p = 1; p <= pdf.numPages; p++) {
+    const tc = await (await pdf.getPage(p)).getTextContent();
+    const items = tc.items.filter((i) => i.str && i.str.trim()).map((i) => ({ s: i.str.trim(), x: i.transform[4], y: i.transform[5], w: i.width || i.str.length * 5 }));
+    textChars += items.reduce((n, i) => n + i.s.length, 0);
+    const lines = [];
+    items.sort((a, b) => b.y - a.y || a.x - b.x).forEach((it) => {
+      const ln = lines.find((l) => Math.abs(l.y - it.y) <= 3);
+      if (ln) ln.t.push(it); else lines.push({ y: it.y, t: [it] });
+    });
+    for (const ln of lines) {
+      ln.t.sort((a, b) => a.x - b.x);
+      const text = ln.t.map((t) => t.s).join(" ");
+      const low = text.toLowerCase();
+      // header line: remember where the debit / credit / balance columns sit
+      if (/(withdraw|debit|paid out)/.test(low) && /(deposit|credit|paid in)/.test(low)) {
+        const c = {}, mid = (t) => t.x + t.w / 2;
+        ln.t.forEach((t) => {
+          const w = t.s.toLowerCase();
+          if (/withdraw|debit|paid out|^dr/.test(w) && c.d == null) c.d = mid(t);
+          else if (/deposit|credit|paid in|^cr/.test(w) && c.c == null) c.c = mid(t);
+          else if (/balance/.test(w)) c.b = mid(t);
+        });
+        if (c.d != null && c.c != null) { cols = c; continue; }
+      }
+      const dm = text.match(IMP_DATE_START);
+      const amts = ln.t.filter((t) => IMP_AMT.test(t.s));
+      if (dm) {
+        if (!amts.length) { last = { date: dm[1], desc: text.slice(dm[0].length).trim(), cells: [] }; out.push(null); out[out.length - 1] = last.row = [dm[1], last.desc, "", "", "", ""]; continue; }
+        const descToks = ln.t.filter((t) => !IMP_AMT.test(t.s));
+        let desc = descToks.map((t) => t.s).join(" ").slice(dm[0].length).trim();
+        const clean = desc.split(/\s+/).filter((w) => !/^\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4}$/.test(w) && !/^\d{6,}$/.test(w)).join(" "); // drop value date + cheque/ref numbers
+        if (clean) desc = clean;
+        const row = [dm[1], desc, "", "", "", ""];
+        const val = (t) => t.s.replace(/[^\d.]/g, "");
+        if (cols) {
+          const colsX = [["d", cols.d], ["c", cols.c], ["b", cols.b]].filter((k) => k[1] != null);
+          amts.forEach((t) => {
+            const m = t.x + t.w / 2, best = colsX.reduce((a, b) => (Math.abs(b[1] - m) < Math.abs(a[1] - m) ? b : a));
+            if (best[0] === "d") row[2] = val(t); else if (best[0] === "c") row[3] = val(t); else prevBal = parseFloat(val(t));
+          });
+        } else {
+          const nums = amts.map((t) => ({ v: parseFloat(val(t)), cr: /cr$/i.test(t.s), dr: /dr$/i.test(t.s), neg: /^\(|^-/.test(t.s) }));
+          if (nums.length >= 2 && prevBal != null) { // last = running balance, so the balance change tells the direction
+            const tx = nums[nums.length - 2].v, bal = nums[nums.length - 1].v;
+            if (Math.abs(prevBal + tx - bal) < 0.02) row[3] = String(tx); else if (Math.abs(prevBal - tx - bal) < 0.02) row[2] = String(tx); else row[4] = String(tx);
+            prevBal = bal;
+          } else if (nums.length >= 2) { row[4] = String(nums[nums.length - 2].v); prevBal = nums[nums.length - 1].v; row[5] = "?"; }
+          else { const n = nums[0]; row[4] = String(n.neg ? -n.v : n.v); if (n.cr) row[5] = "CR"; else if (n.dr) row[5] = "DR"; }
+        }
+        out.push(row); last = { row };
+      } else if (last && last.row && !amts.length && ln.t.length && !/page \d|statement|opening balance|closing balance|total/i.test(low) && last.row[1].length < 100) {
+        last.row[1] = (last.row[1] + " " + text).replace(/\s+/g, " ").trim(); // narration continues on the next line
+      }
+    }
+  }
+  if (textChars < 40) throw new Error(`${file.name}: no selectable text found (scanned PDF). Download CSV/Excel from net banking instead.`);
+  // rows where only the balance moved the other way are unknown: treat as unsigned amount
+  out.forEach((r) => { if (r[5] === "?") r[5] = ""; });
+  if (out.length < 2) throw new Error(`${file.name}: no transaction rows recognised. Try the CSV/Excel download from net banking.`);
+  return out;
+}
+
 async function impReadFile(file) {
+  if (/\.pdf$/i.test(file.name)) return impReadPdf(file);
   if (/\.(xlsx|xls)$/i.test(file.name)) {
     await impLoadXLSX();
     const wb = XLSX.read(await file.arrayBuffer(), { type: "array", cellDates: true });
@@ -158,11 +269,11 @@ async function impReadFile(file) {
 
 function openImport() {
   document.getElementById("impModal")?.remove();
-  imp = { rows: [], headerIdx: 0, map: {}, noSign: "expense", items: [], file: "" };
+  imp = { files: [], items: [] };
   const m = document.createElement("div");
   m.id = "impModal"; m.className = "modal";
   m.innerHTML = `<div class="modal-box card imp-box">
-    <div class="card-title"><h3>Import statement</h3><button type="button" class="del" data-x title="Close">✕</button></div>
+    <div class="card-title"><h3>Import statements</h3><button type="button" class="del" data-x title="Close">✕</button></div>
     <div id="impBody"></div></div>`;
   document.body.appendChild(m);
   const close = () => { m.remove(); document.removeEventListener("keydown", onKey); imp = null; };
@@ -174,55 +285,79 @@ function openImport() {
   impStep1();
 }
 
+async function impAddFiles(list, errEl) {
+  const errs = [];
+  for (const file of Array.from(list)) {
+    if (imp.files.some((f) => f.name === file.name && f.size === file.size)) continue;
+    try {
+      const rows = await impReadFile(file);
+      const f = { name: file.name, size: file.size, label: file.name.replace(/\.[^.]+$/, ""), rows, headerIdx: 0, map: {}, noSign: "expense", items: [] };
+      f.headerIdx = impFindHeader(rows); f.map = impDetect(rows[f.headerIdx] || []);
+      impBuildFile(f); imp.files.push(f);
+    } catch (e) { errs.push(`${file.name}: ${e.message || "could not be read"}`); }
+  }
+  impMerge();
+  if (errs.length && errEl) errEl.textContent = errs.join(" · ");
+  return errs;
+}
+
 function impStep1() {
   const b = document.getElementById("impBody");
   b.innerHTML = `<label class="impdrop" id="impDrop">
-      <b>Drop a bank or card statement here</b><span class="muted">or click to choose · CSV, XLSX or XLS</span>
-      <input type="file" id="impFile" accept=".csv,.txt,.xlsx,.xls" hidden></label>
-    <p class="muted sm">Works with most Indian bank and card statements: date, description, and either debit/credit columns or a single amount column. Dates are read as day/month/year. Nothing is uploaded anywhere. The file is read in your browser.</p>
+      <b>Drop one or more bank / card statements here</b><span class="muted">select several files at once, one per account · CSV, XLSX, XLS or text-based PDF</span>
+      <input type="file" id="impFile" accept=".csv,.txt,.xlsx,.xls,.pdf" multiple hidden></label>
+    <p class="muted sm">Each file is read separately, so different banks and layouts can be imported together. Dates are read as day/month/year. Nothing is uploaded anywhere; files are read in your browser.</p>
     <p class="bad sm" id="impErr"></p>`;
-  const drop = document.getElementById("impDrop"), inp = document.getElementById("impFile");
-  const go = async (f) => {
-    if (!f) return;
-    try {
-      imp.file = f.name; imp.rows = await impReadFile(f);
-      imp.headerIdx = impFindHeader(imp.rows);
-      imp.map = impDetect(imp.rows[imp.headerIdx] || []);
-      impBuild(); impStep2();
-    } catch (e) { document.getElementById("impErr").textContent = e.message || "Could not read that file."; }
-  };
-  inp.onchange = () => go(inp.files[0]);
+  const drop = document.getElementById("impDrop"), inp = document.getElementById("impFile"), err = document.getElementById("impErr");
+  const go = async (files) => { if (!files || !files.length) return; await impAddFiles(files, err); if (imp.files.length) impStep2(); };
+  inp.onchange = () => go(inp.files);
   ["dragover", "dragenter"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("over"); }));
   ["dragleave", "drop"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("over"); }));
-  drop.addEventListener("drop", (e) => go(e.dataTransfer.files[0]));
+  drop.addEventListener("drop", (e) => go(e.dataTransfer.files));
 }
 
 function impStep2() {
   const b = document.getElementById("impBody");
-  const head = imp.rows[imp.headerIdx] || [];
-  const sel = (k, label) => `<label>${label}<select data-map="${k}"><option value="-1">— none —</option>${head.map((h, i) => `<option value="${i}"${imp.map[k] === i ? " selected" : ""}>${esc(h || "Column " + (i + 1))}</option>`).join("")}</select></label>`;
   const items = imp.items, on = items.filter((t) => t.on), dups = items.filter((t) => t.dup).length;
   const sum = (a, ty) => a.filter((t) => t.type === ty).reduce((s, t) => s + t.amount, 0);
   const shown = items.slice(0, 500);
+  const multi = imp.files.length > 1;
+  const mapSel = (fi, f, k, label) => `<label>${label}<select data-fi="${fi}" data-map="${k}"><option value="-1">— none —</option>${(f.rows[f.headerIdx] || []).map((h, i) => `<option value="${i}"${f.map[k] === i ? " selected" : ""}>${esc(h || "Column " + (i + 1))}</option>`).join("")}</select></label>`;
   b.innerHTML = `
-    <p class="muted sm">${esc(imp.file)} · ${items.length} transaction${items.length === 1 ? "" : "s"} found${dups ? ` · <b>${dups} already in your ledger</b> (unticked)` : ""}</p>
-    <details class="impmap"${items.length ? "" : " open"}><summary>Column mapping</summary>
-      <div class="modal-grid imp-grid">${sel("date", "Date")}${sel("desc", "Description")}${sel("debit", "Debit / Withdrawal")}${sel("credit", "Credit / Deposit")}${sel("amount", "Amount (single column)")}${sel("drcr", "Dr/Cr or Type column")}
-      <label>Unsigned amounts are<select id="impNoSign"><option value="expense"${imp.noSign === "expense" ? " selected" : ""}>Expenses</option><option value="income"${imp.noSign === "income" ? " selected" : ""}>Income</option></select></label></div>
-    </details>
-    ${items.length ? `<div class="scroll impscroll"><table class="imptable"><thead><tr><th><input type="checkbox" id="impAll" ${on.length === items.length ? "checked" : ""}></th><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th class="num">Amount</th></tr></thead>
-      <tbody>${shown.map((t, i) => `<tr class="${t.dup ? "dup" : ""}"><td><input type="checkbox" data-on="${i}" ${t.on ? "checked" : ""}></td><td>${esc(t.date)}</td>
+    <div class="impfiles">${imp.files.map((f, fi) => `
+      <details class="impfile"${f.items.length ? "" : " open"}>
+        <summary><b>${esc(f.name)}</b> · ${f.items.length} row${f.items.length === 1 ? "" : "s"}${f.items.length ? "" : ' <span class="bad">— check mapping</span>'}
+          <span class="impacct">Account <input data-label="${fi}" value="${esc(f.label)}" maxlength="40" title="Label saved on each transaction from this file"></span>
+          <button type="button" class="del" data-rmfile="${fi}" title="Remove this file">✕</button></summary>
+        <div class="modal-grid imp-grid">${mapSel(fi, f, "date", "Date")}${mapSel(fi, f, "desc", "Description")}${mapSel(fi, f, "debit", "Debit / Withdrawal")}${mapSel(fi, f, "credit", "Credit / Deposit")}${mapSel(fi, f, "amount", "Amount (single column)")}${mapSel(fi, f, "drcr", "Dr/Cr or Type column")}
+        <label>Unsigned amounts are<select data-fi="${fi}" data-nosign><option value="expense"${f.noSign === "expense" ? " selected" : ""}>Expenses</option><option value="income"${f.noSign === "income" ? " selected" : ""}>Income</option></select></label></div>
+      </details>`).join("")}
+      <button type="button" class="ghost sm" id="impMore">+ Add more files</button><input type="file" id="impMoreIn" accept=".csv,.txt,.xlsx,.xls,.pdf" multiple hidden>
+    </div>
+    <p class="muted sm">${items.length} transaction${items.length === 1 ? "" : "s"} from ${imp.files.length} file${imp.files.length === 1 ? "" : "s"}${dups ? ` · <b>${dups} already in your ledger</b> (unticked)` : ""}</p>
+    ${items.length ? `<div class="scroll impscroll"><table class="imptable"><thead><tr><th><input type="checkbox" id="impAll" ${on.length === items.length ? "checked" : ""}></th><th>Date</th>${multi ? "<th>Account</th>" : ""}<th>Type</th><th>Category</th><th>Description</th><th class="num">Amount</th></tr></thead>
+      <tbody>${shown.map((t, i) => `<tr class="${t.dup ? "dup" : ""}"><td><input type="checkbox" data-on="${i}" ${t.on ? "checked" : ""}></td><td>${esc(t.date)}</td>${multi ? `<td class="muted">${esc(t.account)}</td>` : ""}
         <td><select data-ty="${i}"><option${t.type === "expense" ? " selected" : ""}>expense</option><option${t.type === "income" ? " selected" : ""}>income</option></select></td>
         <td><select data-cat="${i}">${opts(t.type === "income" ? INCOME_CATS : EXPENSE_CATS, t.category)}</select></td>
         <td class="impdesc" title="${esc(t.note)}">${esc(t.note)}${t.dup ? ' <span class="pill">duplicate</span>' : ""}</td>
         <td class="num ${t.type === "income" ? "good" : "bad"}">${t.type === "income" ? "+" : "−"}${fmt(t.amount)}</td></tr>`).join("")}</tbody></table></div>
       ${items.length > shown.length ? `<p class="muted sm">Showing the first ${shown.length} rows; all ${items.length} are imported.</p>` : ""}`
-    : `<p class="bad">No transactions recognised. Check the column mapping above (a Date column and a Debit/Credit or Amount column are needed).</p>`}
+    : `<p class="bad">No transactions recognised yet. Open a file above and check its column mapping (a Date column and a Debit/Credit or Amount column are needed).</p>`}
     <div class="modal-acts"><span class="muted sm" id="impSum">${on.length} selected · Income <b class="good">${fmt(sum(on, "income"))}</b> · Expenses <b class="bad">${fmt(sum(on, "expense"))}</b></span>
-      <button type="button" class="ghost" id="impBack">Choose another file</button><button type="button" class="primary" id="impGo" ${on.length ? "" : "disabled"}>Import ${on.length}</button></div>`;
-  const rerender = () => impStep2();
-  b.querySelectorAll("[data-map]").forEach((s) => (s.onchange = () => { imp.map[s.dataset.map] = Number(s.value); impBuild(); rerender(); }));
-  const ns = document.getElementById("impNoSign"); ns.onchange = () => { imp.noSign = ns.value; impBuild(); rerender(); };
+      <button type="button" class="primary" id="impGo" ${on.length ? "" : "disabled"}>Import ${on.length}</button></div>`;
+  const rebuild = (fi) => { const f = imp.files[fi]; f.items.forEach((t) => (t.checked = false)); impBuildFile(f); impMerge(); impStep2(); };
+  b.querySelectorAll("[data-map]").forEach((s) => (s.onchange = () => { const f = imp.files[s.dataset.fi]; f.map[s.dataset.map] = Number(s.value); rebuild(s.dataset.fi); }));
+  b.querySelectorAll("[data-nosign]").forEach((s) => (s.onchange = () => { imp.files[s.dataset.fi].noSign = s.value; rebuild(s.dataset.fi); }));
+  b.querySelectorAll("[data-label]").forEach((i) => {
+    i.onclick = (e) => e.stopPropagation(); i.onkeydown = (e) => e.stopPropagation();
+    i.onchange = () => { const f = imp.files[i.dataset.label]; f.label = i.value.trim() || f.name; f.items.forEach((t) => (t.account = f.label)); impStep2(); };
+  });
+  b.querySelectorAll("[data-rmfile]").forEach((x) => (x.onclick = (e) => {
+    e.preventDefault(); e.stopPropagation(); imp.files.splice(Number(x.dataset.rmfile), 1); impMerge();
+    if (imp.files.length) impStep2(); else impStep1();
+  }));
+  document.getElementById("impMore").onclick = () => document.getElementById("impMoreIn").click();
+  document.getElementById("impMoreIn").onchange = async (e) => { await impAddFiles(e.target.files); impStep2(); };
   const upd = () => {
     const o = imp.items.filter((t) => t.on);
     document.getElementById("impSum").innerHTML = `${o.length} selected · Income <b class="good">${fmt(sum(o, "income"))}</b> · Expenses <b class="bad">${fmt(sum(o, "expense"))}</b>`;
@@ -232,15 +367,14 @@ function impStep2() {
   b.querySelectorAll("[data-on]").forEach((c) => (c.onchange = () => { imp.items[c.dataset.on].on = c.checked; upd(); }));
   b.querySelectorAll("[data-cat]").forEach((c) => (c.onchange = () => { imp.items[c.dataset.cat].category = c.value; }));
   b.querySelectorAll("[data-ty]").forEach((c) => (c.onchange = () => {
-    const t = imp.items[c.dataset.ty]; t.type = c.value; t.category = impGuess(t.note, t.type); rerender();
+    const t = imp.items[c.dataset.ty]; t.type = c.value; t.category = impGuess(t.note, t.type); impStep2();
   }));
-  const all = document.getElementById("impAll"); if (all) all.onchange = () => { imp.items.forEach((t) => (t.on = all.checked)); rerender(); };
-  document.getElementById("impBack").onclick = () => impStep1();
+  const all = document.getElementById("impAll"); if (all) all.onchange = () => { imp.items.forEach((t) => (t.on = all.checked)); impStep2(); };
   document.getElementById("impGo").onclick = impCommit;
 }
 
 async function impCommit() {
-  const rows = imp.items.filter((t) => t.on).map(({ date, type, amount, note, category }) => ({ date, type, amount, note, category }));
+  const rows = imp.items.filter((t) => t.on).map(({ date, type, amount, note, category, account }) => ({ date, type, amount, note, category, ...(account ? { account } : {}) }));
   if (!rows.length) return;
   const btn = document.getElementById("impGo"); btn.disabled = true; btn.textContent = "Importing…";
   try {

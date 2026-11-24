@@ -494,7 +494,7 @@ function transactions() {
   const li = sum(all.filter((t) => t.type === "income"), (t) => t.amount), le = sum(all.filter((t) => t.type === "expense"), (t) => t.amount);
   $app.innerHTML = `
     <div class="card">
-      <h2 class="h2row">Add transaction <button type="button" class="ghost sm" id="impBtn">⬆ Import statement</button></h2>
+      <h2 class="h2row">Add transaction <button type="button" class="ghost sm" id="impBtn">⬆ Import statements</button></h2>
       <form class="inline" id="f">
         <select name="type" id="typeSel"><option>expense</option><option>income</option></select>
         <select name="category" id="catSel">${opts(EXPENSE_CATS)}</select>
@@ -505,7 +505,7 @@ function transactions() {
       </form>
       <p class="muted">${all.length} entries · Income <b class="good">${fmt(li)}</b> · Expenses <b class="bad">${fmt(le)}</b> · Net <b>${fmt(li - le)}</b>${all.length > rows.length ? ` · showing latest ${rows.length}` : ""}</p>
       <div class="scroll"><table><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Note</th><th class="num">Amount</th><th></th></tr></thead>
-      <tbody>${rows.map((t) => `<tr><td>${esc(t.date)}</td><td>${esc(t.type)}</td><td>${esc(t.category)}</td><td>${txIcon(t) ? `<span class="notecell">${txIcon(t)}${esc(t.note)}</span>` : esc(t.note)}</td>
+      <tbody>${rows.map((t) => `<tr><td>${esc(t.date)}</td><td>${esc(t.type)}</td><td>${esc(t.category)}</td><td>${txIcon(t) ? `<span class="notecell">${txIcon(t)}${esc(t.note)}</span>` : esc(t.note)}${t.account ? ` <span class="acctag">${esc(t.account)}</span>` : ""}</td>
         <td class="num ${t.type === "income" ? "good" : "bad"}">${t.type === "income" ? "+" : "−"}${fmt(t.amount)}</td>
         <td><button class="del" data-del="${esc(t.id)}" title="Delete">✕</button></td></tr>`).join("") || `<tr><td colspan="6" class="muted">No transactions yet.</td></tr>`}</tbody></table></div>
     </div>`;
@@ -938,7 +938,7 @@ function goalsView() {
 const NETS = ["Visa", "Mastercard", "RuPay", "Coral", "Amex", "Diners", "Other"];
 const ALL_CATS = [...new Set([...INCOME_CATS, ...EXPENSE_CATS])];
 const EDIT_SCHEMA = {
-  transactions: [["type", "Type", "select", ["expense", "income"]], ["category", "Category", "select", ALL_CATS], ["amount", "Amount (₹)", "number"], ["date", "Date", "date"], ["note", "Note", "text"]],
+  transactions: [["type", "Type", "select", ["expense", "income"]], ["category", "Category", "select", ALL_CATS], ["amount", "Amount (₹)", "number"], ["date", "Date", "date"], ["note", "Note", "text"], ["account", "Account / statement label", "text"]],
   budgets: [["category", "Category", "select", EXPENSE_CATS], ["limit", "Monthly limit (₹)", "number"]],
   investments: [["name", "Name", "text"], ["type", "Type", "select", INV_TYPES], ["invested", "Invested (₹)", "number"], ["current", "Current value (₹)", "number"]],
   accounts: [["name", "Name", "text"], ["kind", "Type", "select", [["bank account", "Bank account"], ["asset", "Other asset"], ["liability", "Liability"]]], ["value", "Value (₹)", "number"]],
