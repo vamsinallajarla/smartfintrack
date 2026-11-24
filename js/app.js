@@ -110,7 +110,32 @@ async function init() {
   });
 }
 
-const login = () => fb.signInWithPopup(fb.auth, new fb.GoogleAuthProvider());
+function authToast(msg) {
+  document.getElementById("authToast")?.remove();
+  const t = document.createElement("div");
+  t.id = "authToast"; t.className = "imptoast"; t.style.background = "#a33a4a"; t.style.maxWidth = "420px"; t.style.whiteSpace = "pre-wrap";
+  t.textContent = msg; t.onclick = () => t.remove();
+  document.body.appendChild(t); setTimeout(() => t.remove(), 20000);
+}
+const AUTH_HELP = {
+  "auth/unauthorized-domain": "This site's address isn't allowed for sign-in. In Firebase: Authentication > Settings > Authorized domains > add: " + location.hostname,
+  "auth/operation-not-supported-in-this-environment": "Sign-in needs http(s). Open the site from your GitHub Pages address or http://localhost, not by double-clicking the file.",
+  "auth/popup-blocked": "The browser blocked the sign-in popup. Allow popups for this site and try again.",
+  "auth/popup-closed-by-user": "The sign-in window closed before finishing. If it closes by itself, check the browser's popup/cookie settings and Firebase's authorized domains.",
+  "auth/cancelled-popup-request": "Another sign-in window was already open. Close it and try again.",
+  "auth/network-request-failed": "Network problem while signing in. Check your connection and try again.",
+  "auth/api-key-not-valid.-please-pass-a-valid-api-key.": "The Firebase API key was rejected. Check js/firebase-config.js and the key's website restrictions in Google Cloud.",
+  "auth/invalid-api-key": "The Firebase API key was rejected. Check js/firebase-config.js and the key's website restrictions in Google Cloud.",
+};
+async function login() {
+  if (location.protocol === "file:") { authToast(AUTH_HELP["auth/operation-not-supported-in-this-environment"]); return; }
+  try {
+    await fb.signInWithPopup(fb.auth, new fb.GoogleAuthProvider());
+  } catch (e) {
+    console.error("Sign-in failed:", e);
+    authToast("Sign-in failed (" + (e.code || "unknown") + ")\n" + (AUTH_HELP[e.code] || e.message || "") + "\nHostname: " + location.hostname);
+  }
+}
 const logout = () => fb.signOut(fb.auth);
 
 // ---------- CRUD ----------
