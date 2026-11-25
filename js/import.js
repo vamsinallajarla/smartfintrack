@@ -169,6 +169,29 @@ function impMarkTransfers(all) {
     const m = inc.find((i) => !used.has(i) && grp(i) && grp(e) && grp(i) !== grp(e) && impAmt(i) === impAmt(e) && Math.abs(day(i.date) - day(e.date)) <= 3);
     if (m) { used.add(m); e.xfer = m.xfer = e.xfer || "paired"; m.xfer = m.xfer || "paired"; e.xcat = e.xcat || impXferCat(e, null); m.xcat = m.xcat || impXferCat(m, null); }
   });
+  impMarkOtherCredits(all);
+}
+
+// salary is the only income source: every other credit (friends/family, refunds, cashback) is kept out of income
+const IMP_SALARY_RE = /\b(salary|sal|payroll|salcr|sal cr|sal credit)\b|salary/i;
+const IMP_INTEREST_RE = /\b(int\.?\s?pd|interest (paid|credit)|int pd|credit interest)\b/i;
+function impIsSalary(t) {
+  if (t.category === "Salary" || IMP_SALARY_RE.test(t.note || "")) return true;
+  const n = String(t.note || "").toLowerCase();
+  return (data.accounts || []).some((a) => String(a.employer || "").split(/[,;]/).map((x) => x.trim().toLowerCase()).filter((x) => x.length >= 3).some((x) => n.includes(x)));
+}
+function impNonSalaryCat(t) {
+  const n = String(t.note || "").toLowerCase();
+  if (/refund|reversal|refd|chargeback|returned/.test(n)) return "Refund";
+  if (/cashback|cash back|reward/.test(n)) return "Cashback";
+  return "From friends/family";
+}
+function impMarkOtherCredits(all) {
+  all.forEach((t) => {
+    if (t.xfer || t.dir !== "in" || (t.type !== "income" && t.type !== "transfer")) return;
+    if (impIsSalary(t) || IMP_INTEREST_RE.test(t.note || "")) return;
+    t.xfer = "other"; t.xcat = impNonSalaryCat(t);
+  });
 }
 
 // merge every file's rows; flag rows already in the ledger (date + type + amount), honouring multiplicity
@@ -401,7 +424,7 @@ function impStep2() {
       <tbody>${shown.map((t, i) => `<tr class="${t.dup ? "dup" : ""}"><td><input type="checkbox" data-on="${i}" ${t.on ? "checked" : ""}></td><td>${esc(t.date)}</td>${multi ? `<td class="muted">${esc(t.account)}</td>` : ""}
         <td><select data-ty="${i}"><option${t.type === "expense" ? " selected" : ""}>expense</option><option${t.type === "income" ? " selected" : ""}>income</option><option${t.type === "transfer" ? " selected" : ""}>transfer</option></select></td>
         <td><select data-cat="${i}">${opts(t.type === "income" ? INCOME_CATS : t.type === "transfer" ? XFER_CATS : EXPENSE_CATS, t.category)}</select></td>
-        <td class="impdesc" title="${esc(t.note)}">${esc(t.note)}${t.dup ? ' <span class="pill">duplicate</span>' : ""}${t.type === "transfer" ? ` <span class="pill" title="${t.xfer === "paired" ? "Matching entry in another imported account" : t.xfer === "own" ? "Mentions one of your accounts" : t.xfer ? "Wording looks like a transfer" : "Marked as transfer"}">transfer</span>` : ""}</td>
+        <td class="impdesc" title="${esc(t.note)}">${esc(t.note)}${t.dup ? ' <span class="pill">duplicate</span>' : ""}${t.type === "transfer" ? ` <span class="pill" title="${t.xfer === "paired" ? "Matching entry in another imported account" : t.xfer === "own" ? "Mentions one of your accounts" : t.xfer === "other" ? "Credit that is not salary" : t.xfer ? "Wording looks like a transfer" : "Marked as transfer"}">transfer</span>` : ""}</td>
         <td class="num ${txCls(t)}">${t.type === "transfer" ? (t.dir === "in" ? "⇄ in " : "⇄ out ") + fmt(t.amount) : txAmt(t)}</td></tr>`).join("")}</tbody></table></div>
       ${items.length > shown.length ? `<p class="muted sm">Showing the first ${shown.length} rows; all ${items.length} are imported.</p>` : ""}`
     : `<p class="bad">No transactions recognised yet. Open a file above and check its column mapping (a Date column and a Debit/Credit or Amount column are needed).</p>`}

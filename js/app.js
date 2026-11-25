@@ -140,7 +140,7 @@ async function login() {
 const logout = () => fb.signOut(fb.auth);
 
 // ---------- CRUD ----------
-const APP_BUILD = 49;
+const APP_BUILD = 50;
 // run a Firebase write; show the real reason on screen instead of failing silently
 async function fbWrite(what, fn) {
   try { return await fn(); }
@@ -178,7 +178,7 @@ async function resetDemo() {
 
 
 const INCOME_CATS = ["Salary", "Business", "Interest", "Other"];
-const XFER_CATS = ["Own account", "Loan repayment", "Card bill", "FD / RD"];
+const XFER_CATS = ["Own account", "Loan repayment", "Card bill", "FD / RD", "From friends/family", "Refund", "Cashback"];
 const ACCT_ROLES = ["Savings", "Salary", "Current", "UPI spend", "Loan", "Other"];
 const EXPENSE_CATS = ["Food", "Rent", "Transport", "Utilities", "Shopping", "Health", "Entertainment", "Subscriptions", "Other"];
 const COMMIT_TYPES = ["EMI", "Rent", "Insurance", "School / tuition", "Utilities", "Other"];
@@ -583,8 +583,8 @@ function transactions() {
         <td><button class="del" data-del="${esc(t.id)}" title="Delete">✕</button></td></tr>`).join("") || `<tr><td colspan="6" class="muted">No transactions yet.</td></tr>`}</tbody></table></div>
     </div>
     <div class="card xferbox">
-      <div class="card-title"><h3>Transfers between my accounts</h3><button type="button" class="ghost sm" id="xferScan">Find transfers in my entries</button></div>
-      <p class="muted">Counted separately: not income, not expense, not in savings rate. ${xf.length} entr${xf.length === 1 ? "y" : "ies"} · Moved out <b>${fmt(xOut)}</b> · Moved in <b>${fmt(xIn)}</b> · Net left your accounts <b>${fmt(xOut - xIn)}</b> <span class="sm">(loans, FDs or accounts you haven't imported)</span></p>
+      <div class="card-title"><h3>Transfers and non-salary credits</h3><button type="button" class="ghost sm" id="xferScan">Find transfers in my entries</button></div>
+      <p class="muted">Counted separately: not income, not expense, not in savings rate. Own-account moves, money from friends/family, refunds and cashback land here; only salary counts as income. ${xf.length} entr${xf.length === 1 ? "y" : "ies"} · Moved out <b>${fmt(xOut)}</b> · Moved in <b>${fmt(xIn)}</b> · Net left your accounts <b>${fmt(xOut - xIn)}</b> <span class="sm">(loans, FDs or accounts you haven't imported)</span></p>
       ${xf.length ? `<div class="scroll"><table><thead><tr><th>Account</th><th class="num">Out</th><th class="num">In</th><th class="num">Net</th></tr></thead><tbody>${Object.entries(xAcc).map(([k, v]) => `<tr><td>${esc(k)}</td><td class="num">${fmt(v.o)}</td><td class="num">${fmt(v.i)}</td><td class="num">${fmt(v.i - v.o)}</td></tr>`).join("")}</tbody></table></div>` : `<p class="muted sm">None yet. Import statements from several accounts, add your accounts under Net worth (with account numbers / UPI ids), or tap Find transfers.</p>`}
     </div>`;
   document.getElementById("xferScan").onclick = () => window.impScanLedger && window.impScanLedger();
@@ -801,6 +801,7 @@ function networthView() {
           <select name="role" title="What this account is used for"><option value="">Role (optional)</option>${ACCT_ROLES.map((r) => `<option>${r}</option>`).join("")}</select>
           <input name="match" placeholder="Identifiers: a/c no., UPI id, name (comma separated)" maxlength="120" title="Used to recognise transfers in imported statements">
           <input name="phone" placeholder="Phone / UPI number (10 digits, comma separated)" maxlength="60" title="Payments to or from your own number are treated as own transfers, not income or expense">
+          <input name="employer" placeholder="Employer name in salary credit (optional)" maxlength="60" title="Credits containing this text count as salary income; every other credit is kept out of income">
           <input name="rate" type="number" min="0" step="0.1" placeholder="Interest % a year (loans)" title="Optional, shown in Debt and interest on the dashboard">
           <input name="value" type="number" min="0" step="0.01" placeholder="Value (₹)" required>
           <button class="primary">Add</button>
@@ -837,7 +838,7 @@ function networthView() {
   document.getElementById("f").onsubmit = async (e) => {
     e.preventDefault();
     const f = new FormData(e.target);
-    await add("accounts", { name: f.get("name"), kind: f.get("kind"), role: f.get("role") || "", match: String(f.get("match") || "").trim(), phone: String(f.get("phone") || "").trim(), rate: f.get("rate") === "" ? null : Number(f.get("rate")), value: Number(f.get("value")) });
+    await add("accounts", { name: f.get("name"), kind: f.get("kind"), role: f.get("role") || "", match: String(f.get("match") || "").trim(), phone: String(f.get("phone") || "").trim(), employer: String(f.get("employer") || "").trim(), rate: f.get("rate") === "" ? null : Number(f.get("rate")), value: Number(f.get("value")) });
   };
   document.getElementById("cardForm").onsubmit = async (e) => {
     e.preventDefault();
@@ -1076,7 +1077,7 @@ const EDIT_SCHEMA = {
   transactions: [["type", "Type", "select", ["expense", "income", "transfer"]], ["dir", "Direction (transfers)", "select", [["out", "Money out"], ["in", "Money in"]]], ["category", "Category", "select", ALL_CATS], ["amount", "Amount (₹)", "number"], ["date", "Date", "date"], ["note", "Note", "text"], ["account", "Account / statement label", "text"]],
   budgets: [["category", "Category", "select", EXPENSE_CATS], ["limit", "Monthly limit (₹)", "number"]],
   investments: [["name", "Name", "text"], ["type", "Type", "select", INV_TYPES], ["invested", "Invested (₹)", "number"], ["current", "Current value (₹)", "number"]],
-  accounts: [["name", "Name", "text"], ["kind", "Type", "select", [["bank account", "Bank account"], ["asset", "Other asset"], ["liability", "Liability"]]], ["role", "Role", "select", ["", ...ACCT_ROLES]], ["match", "Identifiers (account no., UPI id, name; comma separated)", "text"], ["phone", "Phone / UPI number(s), comma separated", "text"], ["rate", "Interest % a year (loans, optional)", "number"], ["value", "Value (₹)", "number"]],
+  accounts: [["name", "Name", "text"], ["kind", "Type", "select", [["bank account", "Bank account"], ["asset", "Other asset"], ["liability", "Liability"]]], ["role", "Role", "select", ["", ...ACCT_ROLES]], ["match", "Identifiers (account no., UPI id, name; comma separated)", "text"], ["phone", "Phone / UPI number(s), comma separated", "text"], ["employer", "Employer name in salary credit", "text"], ["rate", "Interest % a year (loans, optional)", "number"], ["value", "Value (₹)", "number"]],
   goals: [["name", "Goal name", "text"], ["target", "Target (₹)", "number"], ["saved", "Saved so far (₹)", "number"]],
   cards: [["name", "Card name", "text"], ["last4", "Last 4 digits", "text"], ["network", "Network", "select", NETS], ["limit", "Credit limit (₹)", "number"], ["outstanding", "Outstanding (₹)", "number"], ["dueDay", "Due day (1-31)", "number"]],
   planning: [["area", "Area", "select", PLAN_AREAS], ["item", "Item", "text"], ["detail", "Detail", "text"], ["status", "Status", "select", PLAN_STATUS]],
