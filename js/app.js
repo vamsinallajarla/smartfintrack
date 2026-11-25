@@ -140,7 +140,7 @@ async function login() {
 const logout = () => fb.signOut(fb.auth);
 
 // ---------- CRUD ----------
-const APP_BUILD = 48;
+const APP_BUILD = 49;
 // run a Firebase write; show the real reason on screen instead of failing silently
 async function fbWrite(what, fn) {
   try { return await fn(); }
@@ -800,12 +800,13 @@ function networthView() {
           <select name="kind"><option value="bank account">Bank account</option><option value="asset">Other asset</option><option value="liability">Liability</option></select>
           <select name="role" title="What this account is used for"><option value="">Role (optional)</option>${ACCT_ROLES.map((r) => `<option>${r}</option>`).join("")}</select>
           <input name="match" placeholder="Identifiers: a/c no., UPI id, name (comma separated)" maxlength="120" title="Used to recognise transfers in imported statements">
+          <input name="phone" placeholder="Phone / UPI number (10 digits, comma separated)" maxlength="60" title="Payments to or from your own number are treated as own transfers, not income or expense">
           <input name="rate" type="number" min="0" step="0.1" placeholder="Interest % a year (loans)" title="Optional, shown in Debt and interest on the dashboard">
           <input name="value" type="number" min="0" step="0.01" placeholder="Value (₹)" required>
           <button class="primary">Add</button>
         </form>
         <div class="scroll"><table><thead><tr><th>Name</th><th>Kind</th><th class="num">Value</th><th></th></tr></thead>
-        <tbody>${data.accounts.map((a) => `<tr><td><div class="subname"><label class="icopick" title="Click to use your own icon">${acctIcon(a)}<input type="file" accept="image/*" data-ico="${esc("acct:" + a.name.toLowerCase())}" hidden></label><span>${esc(a.name)}${subIcons["acct:" + a.name.toLowerCase()] ? ` <a href="#" class="link" data-icoreset="${esc("acct:" + a.name.toLowerCase())}">reset</a>` : ""}</span></div></td><td><span class="pill ${a.kind === "liability" ? "bad" : a.kind === "bank account" ? "ok" : ""}">${a.kind === "bank account" ? "Bank account" : a.kind === "asset" ? "Other asset" : "Liability"}</span>${a.role ? ` <span class="muted sm">${esc(a.role)}</span>` : ""}${a.match ? `<div class="muted sm" title="Used to recognise transfers in statements">🔗 ${esc(a.match)}</div>` : ""}</td>
+        <tbody>${data.accounts.map((a) => `<tr><td><div class="subname"><label class="icopick" title="Click to use your own icon">${acctIcon(a)}<input type="file" accept="image/*" data-ico="${esc("acct:" + a.name.toLowerCase())}" hidden></label><span>${esc(a.name)}${subIcons["acct:" + a.name.toLowerCase()] ? ` <a href="#" class="link" data-icoreset="${esc("acct:" + a.name.toLowerCase())}">reset</a>` : ""}</span></div></td><td><span class="pill ${a.kind === "liability" ? "bad" : a.kind === "bank account" ? "ok" : ""}">${a.kind === "bank account" ? "Bank account" : a.kind === "asset" ? "Other asset" : "Liability"}</span>${a.role ? ` <span class="muted sm">${esc(a.role)}</span>` : ""}${a.match ? `<div class="muted sm" title="Used to recognise transfers in statements">🔗 ${esc(a.match)}</div>` : ""}${a.phone ? `<div class="muted sm" title="Own number: payments to it count as own transfers">📱 ${esc(a.phone)}</div>` : ""}</td>
           <td class="num ${a.kind === "liability" ? "bad" : ""}">${fmt(a.value)}</td>
           <td><button class="del" data-del="${esc(a.id)}" title="Delete">✕</button></td></tr>`).join("") || `<tr><td colspan="4" class="muted">Nothing added yet.</td></tr>`}</tbody></table></div>
         <div class="chart-wrap" style="margin-top:18px"><canvas id="c1"></canvas></div>
@@ -836,7 +837,7 @@ function networthView() {
   document.getElementById("f").onsubmit = async (e) => {
     e.preventDefault();
     const f = new FormData(e.target);
-    await add("accounts", { name: f.get("name"), kind: f.get("kind"), role: f.get("role") || "", match: String(f.get("match") || "").trim(), rate: f.get("rate") === "" ? null : Number(f.get("rate")), value: Number(f.get("value")) });
+    await add("accounts", { name: f.get("name"), kind: f.get("kind"), role: f.get("role") || "", match: String(f.get("match") || "").trim(), phone: String(f.get("phone") || "").trim(), rate: f.get("rate") === "" ? null : Number(f.get("rate")), value: Number(f.get("value")) });
   };
   document.getElementById("cardForm").onsubmit = async (e) => {
     e.preventDefault();
@@ -1075,7 +1076,7 @@ const EDIT_SCHEMA = {
   transactions: [["type", "Type", "select", ["expense", "income", "transfer"]], ["dir", "Direction (transfers)", "select", [["out", "Money out"], ["in", "Money in"]]], ["category", "Category", "select", ALL_CATS], ["amount", "Amount (₹)", "number"], ["date", "Date", "date"], ["note", "Note", "text"], ["account", "Account / statement label", "text"]],
   budgets: [["category", "Category", "select", EXPENSE_CATS], ["limit", "Monthly limit (₹)", "number"]],
   investments: [["name", "Name", "text"], ["type", "Type", "select", INV_TYPES], ["invested", "Invested (₹)", "number"], ["current", "Current value (₹)", "number"]],
-  accounts: [["name", "Name", "text"], ["kind", "Type", "select", [["bank account", "Bank account"], ["asset", "Other asset"], ["liability", "Liability"]]], ["role", "Role", "select", ["", ...ACCT_ROLES]], ["match", "Identifiers (account no., UPI id, name; comma separated)", "text"], ["rate", "Interest % a year (loans, optional)", "number"], ["value", "Value (₹)", "number"]],
+  accounts: [["name", "Name", "text"], ["kind", "Type", "select", [["bank account", "Bank account"], ["asset", "Other asset"], ["liability", "Liability"]]], ["role", "Role", "select", ["", ...ACCT_ROLES]], ["match", "Identifiers (account no., UPI id, name; comma separated)", "text"], ["phone", "Phone / UPI number(s), comma separated", "text"], ["rate", "Interest % a year (loans, optional)", "number"], ["value", "Value (₹)", "number"]],
   goals: [["name", "Goal name", "text"], ["target", "Target (₹)", "number"], ["saved", "Saved so far (₹)", "number"]],
   cards: [["name", "Card name", "text"], ["last4", "Last 4 digits", "text"], ["network", "Network", "select", NETS], ["limit", "Credit limit (₹)", "number"], ["outstanding", "Outstanding (₹)", "number"], ["dueDay", "Due day (1-31)", "number"]],
   planning: [["area", "Area", "select", PLAN_AREAS], ["item", "Item", "text"], ["detail", "Detail", "text"], ["status", "Status", "select", PLAN_STATUS]],

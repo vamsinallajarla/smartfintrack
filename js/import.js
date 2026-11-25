@@ -140,6 +140,8 @@ function impOwn() {
   const out = [];
   (data.accounts || []).forEach((a) => String(a.match || "").split(/[,;\n]/).map((x) => x.trim().toLowerCase()).filter((x) => x.length >= 3)
     .forEach((id) => out.push({ id, name: String(a.name || ""), loan: a.role === "Loan" || a.kind === "liability" })));
+  (data.accounts || []).forEach((a) => String(a.phone || "").split(/[,;\n]/).map((x) => x.replace(/\D/g, "").slice(-10)).filter((x) => x.length === 10)
+    .forEach((id) => out.push({ id, name: String(a.name || ""), phone: true, loan: false })));
   (data.cards || []).forEach((c) => { if (c.last4) out.push({ id: String(c.last4), name: c.name || "", card: true }); });
   return out;
 }
@@ -155,7 +157,7 @@ function impMarkTransfers(all) {
   all.forEach((t) => {
     t.xfer = ""; t.xcat = "";
     const n = String(t.note || "").toLowerCase(), acc = String(t.account || "").toLowerCase();
-    const hit = own.find((o) => n.includes(o.id) && o.name.toLowerCase() !== acc && (!o.card || /card|cc|bill|payment/.test(n)));
+    const hit = own.find((o) => o.phone ? new RegExp("(?<!\\d)(?:\\+?91[\\s-]?)?" + o.id + "(?!\\d)").test(t.note || "") : n.includes(o.id) && o.name.toLowerCase() !== acc && (!o.card || /card|cc|bill|payment/.test(n)));
     if (hit) { t.xfer = "own"; t.xcat = impXferCat(t, hit); }
     else if (IMP_XFER_RE.test(t.note)) { t.xfer = "keyword"; t.xcat = impXferCat(t, null); }
   });
