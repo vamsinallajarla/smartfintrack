@@ -939,3 +939,14 @@ main { padding-top: 8px; }
 main .page-title, main .page-sub { margin-top: 0; }
 .smsbox { margin-bottom: 16px; border-color: var(--accent); }
 .smsbox select { padding: 3px 6px; font-size: 12px; }
+
+.rulesub { font: 500 11px "JetBrains Mono", monospace; text-transform: uppercase; letter-spacing: .09em; color: var(--muted); margin: 6px 0 2px; }
+.ownids input { width: 100%; padding: 6px 9px; font-size: 12.5px; }
+.ownids td { padding: 4px 6px; }
+
+/* Net worth scrolls like the dashboard; long lists scroll inside their cards */
+.nwgrid > .card { align-self: start; }
+.nwgrid .scroll { max-height: 360px; overflow-y: auto; }
+.nwgrid .ccscroll { max-height: 520px; overflow-y: auto; padding-right: 4px; }
+.nwgrid .chart-wrap { height: 200px; }
+.ownids { min-width: 520px; }

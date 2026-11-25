@@ -140,7 +140,7 @@ async function login() {
 const logout = () => fb.signOut(fb.auth);
 
 // ---------- CRUD ----------
-const APP_BUILD = 57;
+const APP_BUILD = 59;
 // run a Firebase write; show the real reason on screen instead of failing silently
 async function fbWrite(what, fn) {
   try { return await fn(); }
@@ -810,8 +810,6 @@ function networthView() {
           <input name="name" placeholder="Name" required maxlength="60">
           <select name="kind"><option value="bank account">Bank account</option><option value="asset">Other asset</option><option value="liability">Liability</option></select>
           <select name="role" title="What this account is used for"><option value="">Role (optional)</option>${ACCT_ROLES.map((r) => `<option>${r}</option>`).join("")}</select>
-          <input name="match" placeholder="Identifiers: a/c no., UPI id, name (comma separated)" maxlength="120" title="Used to recognise transfers in imported statements">
-          <input name="phone" placeholder="Phone / UPI number (10 digits, comma separated)" maxlength="60" title="Payments to or from your own number are treated as own transfers, not income or expense">
           <input name="rate" type="number" min="0" step="0.1" placeholder="Interest % a year (loans)" title="Optional, shown in Debt and interest on the dashboard">
           <input name="value" type="number" min="0" step="0.01" placeholder="Value (₹)" required>
           <button class="primary">Add</button>
@@ -843,24 +841,34 @@ function networthView() {
       </div>
     </div>
     <div class="card rulebox">
-      <h2>Credit classification keywords</h2>
-      <p class="muted sm">Used when importing statements and in "Find transfers". Only salary counts as income. Separate words with commas, matching ignores capitals.</p>
+      <h2>Credit/Debit classification keywords</h2>
+      <p class="muted sm">Used when importing statements, reading SMS and in "Find transfers". Only salary counts as income. Separate words with commas, matching ignores capitals.</p>
       <form id="ruleForm" class="rulegrid">
         <label>Salary: employer name<input name="salary" value="${esc(((data.rules.find((x) => x.kind === "salary") || {}).words) || "")}" placeholder="e.g. VIVIDMINDS" maxlength="120"></label>
         <label>Refund<input name="refund" value="${esc(((data.rules.find((x) => x.kind === "refund") || { words: RULE_DEFAULTS.refund }).words))}" maxlength="160"></label>
         <label>Cashback<input name="cashback" value="${esc(((data.rules.find((x) => x.kind === "cashback") || { words: RULE_DEFAULTS.cashback }).words))}" maxlength="160"></label>
         <label>From friends/family<input value="Any other credit" disabled></label>
+        <div class="rulenote"><h3 class="rulesub">Own accounts: account numbers, UPI IDs, names and phone numbers</h3>
+          <p class="muted sm">Any debit or credit that mentions these is an own-account transfer, not income or expense. Add your account numbers (or last 3-4 digits), UPI IDs, your name text and phone / UPI numbers.</p>
+          ${data.accounts.length ? `<div class="scroll"><table class="ownids"><thead><tr><th>Account</th><th>Account no. / UPI id / name</th><th>Phone / UPI number</th></tr></thead><tbody>${data.accounts.map((a) => `<tr data-acc="${esc(a.id)}"><td>${esc(a.name)}${a.role ? ` <span class="muted sm">${esc(a.role)}</span>` : ""}</td><td><input data-am value="${esc(a.match || "")}" placeholder="e.g. 8050, name@okhdfc, NALLAJAR" maxlength="120"></td><td><input data-ap value="${esc(a.phone || "")}" placeholder="10 digits, comma separated" maxlength="60"></td></tr>`).join("")}</tbody></table></div>` : `<p class="muted sm">Add your accounts above first, then add their numbers here.</p>`}</div>
         <div class="rulenote muted sm">"salary", "payroll" and bank interest are always recognised. Refunds, cashback and friends/family are kept out of income.</div>
         <button class="primary">Save keywords</button>
       </form>
     </div>`;
   document.getElementById("ruleForm").onsubmit = async (e) => {
     e.preventDefault(); const f = new FormData(e.target);
+    // read everything first: each write re-renders the page and would reset the inputs
+    const accChanges = [...document.querySelectorAll("#ruleForm tr[data-acc]")].map((tr) => {
+      const a = data.accounts.find((x) => x.id === tr.dataset.acc); if (!a) return null;
+      const match = tr.querySelector("[data-am]").value.trim(), phone = tr.querySelector("[data-ap]").value.trim();
+      return match !== (a.match || "") || phone !== (a.phone || "") ? { id: a.id, match, phone } : null;
+    }).filter(Boolean);
     for (const kind of ["salary", "refund", "cashback"]) {
       const words = String(f.get(kind) || "").trim(), cur = data.rules.find((x) => x.kind === kind);
       if (cur) { if (cur.words !== words) await update("rules", cur.id, { words }); } else await add("rules", { kind, words });
     }
-    authToast("Keywords saved");
+    for (const c of accChanges) await update("accounts", c.id, { match: c.match, phone: c.phone });
+    authToast("Saved");
   };
   chart("c1", { type: "bar", data: { labels: ["Cash & assets", "Investments", "Liabilities (incl. cards)"],
     datasets: [{ data: [nw.assets, nw.invested, nw.liabilities], backgroundColor: gradBg([css("--c1"), css("--c4"), css("--c2")]), borderRadius: 10, borderSkipped: false }] },
@@ -868,7 +876,7 @@ function networthView() {
   document.getElementById("f").onsubmit = async (e) => {
     e.preventDefault();
     const f = new FormData(e.target);
-    await add("accounts", { name: f.get("name"), kind: f.get("kind"), role: f.get("role") || "", match: String(f.get("match") || "").trim(), phone: String(f.get("phone") || "").trim(), rate: f.get("rate") === "" ? null : Number(f.get("rate")), value: Number(f.get("value")) });
+    await add("accounts", { name: f.get("name"), kind: f.get("kind"), role: f.get("role") || "", rate: f.get("rate") === "" ? null : Number(f.get("rate")), value: Number(f.get("value")) });
   };
   document.getElementById("cardForm").onsubmit = async (e) => {
     e.preventDefault();
@@ -1107,7 +1115,7 @@ const EDIT_SCHEMA = {
   transactions: [["type", "Type", "select", ["expense", "income", "transfer"]], ["dir", "Direction (transfers)", "select", [["out", "Money out"], ["in", "Money in"]]], ["category", "Category", "select", ALL_CATS], ["amount", "Amount (₹)", "number"], ["date", "Date", "date"], ["note", "Note", "text"], ["account", "Account / statement label", "text"]],
   budgets: [["category", "Category", "select", EXPENSE_CATS], ["limit", "Monthly limit (₹)", "number"]],
   investments: [["name", "Name", "text"], ["type", "Type", "select", INV_TYPES], ["invested", "Invested (₹)", "number"], ["current", "Current value (₹)", "number"]],
-  accounts: [["name", "Name", "text"], ["kind", "Type", "select", [["bank account", "Bank account"], ["asset", "Other asset"], ["liability", "Liability"]]], ["role", "Role", "select", ["", ...ACCT_ROLES]], ["match", "Identifiers (account no., UPI id, name; comma separated)", "text"], ["phone", "Phone / UPI number(s), comma separated", "text"], ["rate", "Interest % a year (loans, optional)", "number"], ["value", "Value (₹)", "number"]],
+  accounts: [["name", "Name", "text"], ["kind", "Type", "select", [["bank account", "Bank account"], ["asset", "Other asset"], ["liability", "Liability"]]], ["role", "Role", "select", ["", ...ACCT_ROLES]], ["rate", "Interest % a year (loans, optional)", "number"], ["value", "Value (₹)", "number"]],
   goals: [["name", "Goal name", "text"], ["target", "Target (₹)", "number"], ["saved", "Saved so far (₹)", "number"]],
   cards: [["name", "Card name", "text"], ["last4", "Last 4 digits", "text"], ["network", "Network", "select", NETS], ["limit", "Credit limit (₹)", "number"], ["outstanding", "Outstanding (₹)", "number"], ["dueDay", "Due day (1-31)", "number"]],
   planning: [["area", "Area", "select", PLAN_AREAS], ["item", "Item", "text"], ["detail", "Detail", "text"], ["status", "Status", "select", PLAN_STATUS]],
@@ -1291,7 +1299,7 @@ function render() {
     authBtn.hidden = false; authBtn.textContent = "Reset demo data";
     authBtn.onclick = () => confirm("Reset to sample data?") && resetDemo();
   }
-  $app.classList.toggle("fit", view !== "overview");
+  $app.classList.toggle("fit", view !== "overview" && view !== "networth");
   $app.dataset.view = view;
   $app.classList.toggle("enter", animateNext);
   try { views[view](); }
