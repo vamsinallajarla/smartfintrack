@@ -832,3 +832,73 @@ body.signedout .shell, body.signedout #wallPop { display: none; }
 .hist2 .tx > div:nth-child(2) { min-width: 0; overflow: hidden; }
 .hist2 .tx .t, .hist2 .tx .s { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .hist2 .tx .a { white-space: nowrap; }
+
+.rulebox { margin-top: 16px; }
+.rulegrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; align-items: end; }
+.rulegrid label { display: grid; gap: 4px; font-size: 12px; color: var(--muted); }
+.rulegrid .rulenote { grid-column: 1 / -1; }
+
+/* dashboard v2 cleanup: no overlaps, readable over the background photo */
+.d-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (min-width: 1700px) { .d-kpis { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+@media (max-width: 720px) { .d-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.d-kpi { position: relative; display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+.d-kpi .d-kv { font-size: clamp(20px, 2.2vw, 28px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.d-kpi .spark { position: static; right: auto; bottom: auto; width: 100%; height: 40px; margin-top: auto; padding-top: 8px; display: block; flex: none; }
+.d-kpi .gauge2, .d-kpi .d-track.thin { margin-top: auto; }
+.d-kpi .muted.sm { margin-bottom: 8px; }
+.dash2 .card, .dash2 .d-cols > * { min-width: 0; }
+.d-head { padding: 16px 20px; }
+.d-row { grid-template-columns: minmax(70px, 1fr) minmax(80px, 2fr) auto; }
+.d-val { white-space: normal; }
+.dash2 table td, .dash2 table th { overflow-wrap: anywhere; }
+
+/* ===== macOS-style top menu bar (replaces the sidebar) ===== */
+.shell, .shell.collapsed { display: block; }
+.menubar { display: flex; align-items: center; gap: 14px; height: 40px; padding: 0 14px; position: sticky; top: 0; z-index: 20;
+  background: linear-gradient(180deg, var(--rail-a), var(--rail-b)); backdrop-filter: blur(22px) saturate(1.5); border-bottom: 1px solid var(--glass-border, var(--line)); color: var(--rail-text); }
+.menubar .brand { font-size: 15px; padding: 0; gap: 7px; flex: none; }
+.menubar .mark { width: 10px; height: 10px; }
+.menubar nav { flex-direction: row; flex: none; gap: 0; }
+.menubar nav button { padding: 5px 10px; border-radius: 6px; font-size: 12.5px; font-weight: 500; gap: 0; }
+.menubar nav button i { display: none; }
+.menubar nav button:hover { background: rgba(255,255,255,.1); }
+.menubar nav button.active { background: var(--rail-active); font-weight: 600; }
+.menubar .search { flex: 0 1 190px; margin-left: auto; padding: 4px 10px; font-size: 12px; border-radius: 7px; height: 26px; }
+.menubar .topright { margin-left: 0; gap: 6px; font-size: 12px; }
+.menubar .iconbtn { width: 26px; height: 26px; border-radius: 7px; font-size: 12px; padding: 0; }
+.menubar .chip { padding: 3px 9px; font-size: 12px; }
+.menubar .ghost { padding: 3px 10px; font-size: 12px; border-radius: 7px; }
+.menubar .railnote { padding: 0; background: none; border: 0; font: 500 11px "JetBrains Mono", monospace; color: var(--rail-muted, var(--muted)); white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; box-shadow: none; }
+.sdot { width: 7px; height: 7px; border-radius: 50%; background: var(--good); display: inline-block; } .sdot.demo { background: var(--warn); }
+.wallpop { top: 46px; }
+@media (min-width: 1181px) {
+  .topbar.menubar { height: 40px; padding: 0 14px; }
+  main.fit { height: calc(100vh - 40px); }
+}
+main { max-width: none; padding-top: 14px; }
+@media (max-width: 900px) {
+  .menubar { height: auto; flex-wrap: wrap; padding: 6px 10px; gap: 6px 10px; }
+  .menubar nav { order: 3; width: 100%; overflow-x: auto; }
+  .menubar .search { margin-left: 0; flex: 1 1 120px; }
+  .menubar .railnote, .menubar .chip { display: none; }
+}
+.menubar #themeBtn, .menubar .iconbtn { width: 26px !important; height: 26px !important; min-width: 0; padding: 0; line-height: 1; display: inline-flex; align-items: center; justify-content: center; }
+
+/* transparent glass cards on the dashboard: background stays visible, content stays crisp */
+:root { --dglass: rgba(255,255,255,.16); --dglass2: rgba(255,255,255,.06); --dtext-shadow: 0 0 6px rgba(255,255,255,.7), 0 1px 1px rgba(255,255,255,.6); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --dglass: rgba(10,10,30,.14); --dglass2: rgba(10,10,30,.05); --dtext-shadow: 0 1px 4px rgba(0,0,0,.7); } }
+:root[data-theme="dark"] { --dglass: rgba(10,10,30,.14); --dglass2: rgba(10,10,30,.05); --dtext-shadow: 0 1px 4px rgba(0,0,0,.7); }
+.dash2 .card { background: linear-gradient(145deg, var(--dglass), var(--dglass2)); backdrop-filter: blur(10px) saturate(1.4); border-color: var(--glass-border); }
+.dash2 .card, .dash2 .card * { text-shadow: var(--dtext-shadow); }
+.dash2 canvas, .dash2 svg { text-shadow: none; }
+.dash2 .muted { color: color-mix(in srgb, var(--text) 68%, transparent); }
+.dash2 .d-track, .dash2 .d-seg i { box-shadow: 0 0 0 1px rgba(0,0,0,.06); }
+.dash2 .d-track { background: color-mix(in srgb, var(--text) 16%, transparent); }
+.dash2 table th { color: color-mix(in srgb, var(--text) 75%, transparent); }
+.dash2 table td, .dash2 table th { border-color: color-mix(in srgb, var(--text) 16%, transparent); }
+.subtiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+.subtile { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 14px; background: color-mix(in srgb, var(--text) 7%, transparent); border: 1px solid color-mix(in srgb, var(--text) 12%, transparent); }
+.subtile .stx, .subtile .sta { display: grid; min-width: 0; }
+.subtile .stx b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13.5px; }
+.subtile .sta { text-align: right; font-variant-numeric: tabular-nums; } .subtile .sta b { font-size: 13.5px; font-weight: 600; }

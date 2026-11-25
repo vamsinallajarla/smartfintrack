@@ -178,12 +178,12 @@ const IMP_INTEREST_RE = /\b(int\.?\s?pd|interest (paid|credit)|int pd|credit int
 function impIsSalary(t) {
   if (t.category === "Salary" || IMP_SALARY_RE.test(t.note || "")) return true;
   const n = String(t.note || "").toLowerCase();
-  return (data.accounts || []).some((a) => String(a.employer || "").split(/[,;]/).map((x) => x.trim().toLowerCase()).filter((x) => x.length >= 3).some((x) => n.includes(x)));
+  return window.ruleWords("salary").some((x) => n.includes(x));
 }
 function impNonSalaryCat(t) {
   const n = String(t.note || "").toLowerCase();
-  if (/refund|reversal|refd|chargeback|returned/.test(n)) return "Refund";
-  if (/cashback|cash back|reward/.test(n)) return "Cashback";
+  if (window.ruleWords("refund").some((x) => n.includes(x))) return "Refund";
+  if (window.ruleWords("cashback").some((x) => n.includes(x))) return "Cashback";
   return "From friends/family";
 }
 function impMarkOtherCredits(all) {

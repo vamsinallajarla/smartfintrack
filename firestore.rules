@@ -16,9 +16,9 @@ service cloud.firestore {
     // Each user can only touch their own data, in the app's collections only
     match /users/{userId}/{col}/{docId} {
       allow read, delete: if isOwner(userId)
-        && col in ['transactions','budgets','investments','accounts','goals','cards','subs','commitments','planning'];
+        && col in ['transactions','budgets','investments','accounts','goals','cards','subs','commitments','planning','rules'];
       allow create, update: if isOwner(userId)
-        && col in ['transactions','budgets','investments','accounts','goals','cards','subs','commitments','planning']
+        && col in ['transactions','budgets','investments','accounts','goals','cards','subs','commitments','planning','rules']
         && sane();
     }
 

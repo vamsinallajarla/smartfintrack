@@ -4,8 +4,8 @@ const firebaseConfig = window.firebaseConfig;
 const configured = !!(firebaseConfig && firebaseConfig.apiKey && !firebaseConfig.apiKey.startsWith("YOUR_"));
 const mode = configured ? "firebase" : "demo";
 
-const COLS = ["transactions", "budgets", "investments", "accounts", "goals", "cards", "subs", "commitments", "planning"];
-const data = { transactions: [], budgets: [], investments: [], accounts: [], goals: [], cards: [], subs: [], commitments: [], planning: [] };
+const COLS = ["transactions", "budgets", "investments", "accounts", "goals", "cards", "subs", "commitments", "planning", "rules"];
+const data = { transactions: [], budgets: [], investments: [], accounts: [], goals: [], cards: [], subs: [], commitments: [], planning: [], rules: [] };
 let user = null;
 let authReady = false;
 
@@ -140,7 +140,7 @@ async function login() {
 const logout = () => fb.signOut(fb.auth);
 
 // ---------- CRUD ----------
-const APP_BUILD = 50;
+const APP_BUILD = 55;
 // run a Firebase write; show the real reason on screen instead of failing silently
 async function fbWrite(what, fn) {
   try { return await fn(); }
@@ -473,6 +473,8 @@ function overview() {
   const pl = data.planning.slice().sort((a, b) => PLAN_AREAS.indexOf(a.area) - PLAN_AREAS.indexOf(b.area));
   const plCount = (s) => pl.filter((p) => p.status === s).length;
   const plCol = { "On track": "var(--good)", "Needs attention": "var(--warn)", "Action needed": "var(--bad)" };
+  const activeSubs = data.subs.filter((x) => x.active !== false).sort((a, b) => subNext(a) - subNext(b));
+  const subMo = sum(activeSubs, subMonthly), subYr = subMo * 12;
   const recent = [...tx].sort((a, b) => String(b.date).localeCompare(String(a.date))).slice(0, 7);
   const typeCol = {}; [...new Set(upcoming.map((x) => x.t))].forEach((t, i) => (typeCol[t] = colors[i % 6]));
   const legend = (rows) => rows.map(([n, v], k) => `<div class="d-li"><i class="dot" style="background:${colors[k % 6]}"></i><span>${esc(n)}</span><b>${fmt(v)}</b></div>`).join("");
@@ -481,7 +483,7 @@ function overview() {
 
   $app.innerHTML = `
   <div class="dash2">
-    <div class="d-head">
+    <div class="card d-head">
       <h2 class="d-title">Personal finance overview</h2>
       <p class="d-take">Net worth is <b>${fmt(nw.total)}</b>, <b class="${nwChange >= 0 ? "good" : "bad"}">${sgn(nwChange)}</b> over the last month${inc > 0 ? `, and <b>${rate.toFixed(0)}%</b> of income is saved in ${esc(periodLabel())}` : ""}.</p>
     </div>
@@ -493,6 +495,9 @@ function overview() {
       ${kpi("Emergency fund", reserveM.toFixed(1), "months of spending, goal 6", gaugeSvg(reserveM / 6, reserveM >= 6), reserveM < 3 && data.accounts.length ? "bad" : "")}
       ${kpi("Fixed commitments", fmt(cmTotal), `${cmPct.toFixed(0)}% of income · EMIs ${fmt(emiTotal)}`, `<div class="d-track thin"><div class="d-fill ${cmPct > 50 ? "over" : ""}" style="width:${Math.min(100, cmPct)}%"></div></div>`)}
     </div>
+    <div class="card subsdash"><div class="card-title"><h3>My subscriptions</h3><button class="link" data-go="subs">Manage</button></div>
+      <p class="muted sm">${activeSubs.length ? `${activeSubs.length} active · ${fmt(subMo)} a month · ${fmt(subYr)} a year` : "Nothing subscribed yet."}</p>
+      ${activeSubs.length ? `<div class="subtiles">${activeSubs.map((x) => `<div class="subtile">${subIconFor(x.name, x.category)}<div class="stx"><b>${esc(x.name)}</b><span class="muted sm">${esc(x.category)} · ${x.cycle === "yearly" ? "yearly" : "monthly"}</span></div><div class="sta"><b>${fmt(x.amount)}</b><span class="muted sm">next ${esc(dShort(subNext(x)))}</span></div></div>`).join("")}</div>` : `<p class="muted">Add OTT and other subscriptions to see what you own here.</p>`}</div>
     <div class="d-cols">
       <div class="card"><h3>Net worth, last 6 months</h3><p class="muted sm">Estimated from today's net worth and your monthly cash flow.</p><div class="dchart"><canvas id="dc_nw"></canvas></div></div>
       <div class="card"><h3>Savings rate by month</h3><p class="muted sm">Dashed line is the 20% target.</p><div class="dchart"><canvas id="dc_sr"></canvas></div></div>
@@ -530,20 +535,20 @@ function overview() {
         <div class="a ${t.type === "income" ? "good" : t.type === "transfer" ? "muted" : ""}">${txAmt(t)}</div></div>`).join("") || `<span class="muted">No transactions in this period.</span>`}</div></div>
   </div>`;
 
-  const grid = css("--line");
-  const yk = { grid: { color: grid }, border: { display: false }, ticks: { callback: (v) => (Math.abs(v) >= 1000 ? v / 1000 + "k" : v) } };
+  const grid = css("--line"), tc = css("--text");
+  const yk = { grid: { color: grid }, border: { display: false }, ticks: { color: tc, callback: (v) => (Math.abs(v) >= 1000 ? v / 1000 + "k" : v) } };
   const base = { maintainAspectRatio: false, plugins: { legend: { display: false } } };
   const line = (label, d, col) => ({ label, data: d, borderColor: col, backgroundColor: hexA(col, 0.12), fill: true, tension: 0.35, borderWidth: 2.5, pointRadius: 3.5, pointBackgroundColor: col });
-  chart("dc_nw", { type: "line", data: { labels: mLab, datasets: [line("Net worth", nwHist, k1)] }, options: { ...base, scales: { x: { grid: { display: false } }, y: yk }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => ` ${fmt(c.parsed.y)}` } } } } });
+  chart("dc_nw", { type: "line", data: { labels: mLab, datasets: [line("Net worth", nwHist, k1)] }, options: { ...base, scales: { x: { grid: { display: false }, ticks: { color: tc } }, y: yk }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => ` ${fmt(c.parsed.y)}` } } } } });
   chart("dc_sr", { type: "line", data: { labels: mLab, datasets: [line("Savings rate", sRate.map((v) => Math.round(v * 10) / 10), k3), { label: "Target", data: mLab.map(() => 20), borderColor: hexA(k3, 0.6), borderDash: [6, 5], borderWidth: 1.5, pointRadius: 0, fill: false }] },
-    options: { ...base, scales: { x: { grid: { display: false } }, y: { ...yk, ticks: { callback: (v) => v + "%" } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => ` ${c.dataset.label}: ${c.parsed.y}%` } } } } });
+    options: { ...base, scales: { x: { grid: { display: false }, ticks: { color: tc } }, y: { ...yk, ticks: { color: tc, callback: (v) => v + "%" } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => ` ${c.dataset.label}: ${c.parsed.y}%` } } } } });
   chart("dc_cf", { type: "bar", data: { labels: mLab, datasets: [{ label: "Income", data: sInc, backgroundColor: k1, borderRadius: 4 }, { label: "Spending", data: sExp, backgroundColor: k2, borderRadius: 4 }] },
-    options: { ...base, scales: { x: { grid: { display: false } }, y: yk }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => ` ${c.dataset.label}: ${fmt(c.parsed.y)}` } } } } });
+    options: { ...base, scales: { x: { grid: { display: false }, ticks: { color: tc } }, y: yk }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => ` ${c.dataset.label}: ${fmt(c.parsed.y)}` } } } } });
   const donut = (id, rows) => chart(id, { type: "doughnut", data: { labels: rows.length ? rows.map((c) => c[0]) : ["None"], datasets: [{ data: rows.length ? rows.map((c) => c[1]) : [1], backgroundColor: rows.length ? gradBg(colors) : [grid], borderColor: css("--card"), borderWidth: 2 }] },
     options: { cutout: "66%", plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => ` ${c.label}: ${fmt(c.parsed)}` } } } } });
   donut("dc_sp", cats); donut("dc_al", allocRows);
   chart("dc_bl", { type: "bar", data: { labels: upcoming.map((x) => dShort(x.d)), datasets: [{ data: upcoming.map((x) => x.a), backgroundColor: upcoming.map((x) => typeCol[x.t]), borderRadius: 4 }] },
-    options: { ...base, scales: { x: { grid: { display: false } }, y: yk }, plugins: { legend: { display: false }, tooltip: { callbacks: { title: (c) => upcoming[c[0].dataIndex].n, label: (c) => ` ${fmt(c.parsed.y)}` } } } } });
+    options: { ...base, scales: { x: { grid: { display: false }, ticks: { color: tc } }, y: yk }, plugins: { legend: { display: false }, tooltip: { callbacks: { title: (c) => upcoming[c[0].dataIndex].n, label: (c) => ` ${fmt(c.parsed.y)}` } } } } });
 
   $app.querySelectorAll("[data-go]").forEach((el) => (el.onclick = () => { const [v, arg] = el.dataset.go.split(":"); goTo(v, () => focusForm(arg)); }));
   const planBox = document.getElementById("planBox");
@@ -779,6 +784,9 @@ function cardDetail(c) {
   </div>`;
 }
 
+const RULE_DEFAULTS = { salary: "", refund: "refund, reversal, chargeback, refd, returned", cashback: "cashback, cash back, reward" };
+const ruleWords = (kind) => { const r = data.rules.find((x) => x.kind === kind); return String(r ? r.words : RULE_DEFAULTS[kind] || "").split(/[,;\n]/).map((x) => x.trim().toLowerCase()).filter((x) => x.length >= 3); };
+window.ruleWords = ruleWords;
 function networthView() {
   const nw = netWorth();
   const other = nw.liabilities - nw.cardDues;
@@ -801,7 +809,6 @@ function networthView() {
           <select name="role" title="What this account is used for"><option value="">Role (optional)</option>${ACCT_ROLES.map((r) => `<option>${r}</option>`).join("")}</select>
           <input name="match" placeholder="Identifiers: a/c no., UPI id, name (comma separated)" maxlength="120" title="Used to recognise transfers in imported statements">
           <input name="phone" placeholder="Phone / UPI number (10 digits, comma separated)" maxlength="60" title="Payments to or from your own number are treated as own transfers, not income or expense">
-          <input name="employer" placeholder="Employer name in salary credit (optional)" maxlength="60" title="Credits containing this text count as salary income; every other credit is kept out of income">
           <input name="rate" type="number" min="0" step="0.1" placeholder="Interest % a year (loans)" title="Optional, shown in Debt and interest on the dashboard">
           <input name="value" type="number" min="0" step="0.01" placeholder="Value (₹)" required>
           <button class="primary">Add</button>
@@ -831,14 +838,34 @@ function networthView() {
         ${cur ? cardDetail(cur) : data.cards.length ? `<p class="muted" style="margin:12px 0 0;font-size:12px">Click a card to see details and record payments.</p>` : ""}
         </div>
       </div>
+    </div>
+    <div class="card rulebox">
+      <h2>Credit classification keywords</h2>
+      <p class="muted sm">Used when importing statements and in "Find transfers". Only salary counts as income. Separate words with commas, matching ignores capitals.</p>
+      <form id="ruleForm" class="rulegrid">
+        <label>Salary: employer name<input name="salary" value="${esc(((data.rules.find((x) => x.kind === "salary") || {}).words) || "")}" placeholder="e.g. VIVIDMINDS" maxlength="120"></label>
+        <label>Refund<input name="refund" value="${esc(((data.rules.find((x) => x.kind === "refund") || { words: RULE_DEFAULTS.refund }).words))}" maxlength="160"></label>
+        <label>Cashback<input name="cashback" value="${esc(((data.rules.find((x) => x.kind === "cashback") || { words: RULE_DEFAULTS.cashback }).words))}" maxlength="160"></label>
+        <label>From friends/family<input value="Any other credit" disabled></label>
+        <div class="rulenote muted sm">"salary", "payroll" and bank interest are always recognised. Refunds, cashback and friends/family are kept out of income.</div>
+        <button class="primary">Save keywords</button>
+      </form>
     </div>`;
+  document.getElementById("ruleForm").onsubmit = async (e) => {
+    e.preventDefault(); const f = new FormData(e.target);
+    for (const kind of ["salary", "refund", "cashback"]) {
+      const words = String(f.get(kind) || "").trim(), cur = data.rules.find((x) => x.kind === kind);
+      if (cur) { if (cur.words !== words) await update("rules", cur.id, { words }); } else await add("rules", { kind, words });
+    }
+    authToast("Keywords saved");
+  };
   chart("c1", { type: "bar", data: { labels: ["Cash & assets", "Investments", "Liabilities (incl. cards)"],
     datasets: [{ data: [nw.assets, nw.invested, nw.liabilities], backgroundColor: gradBg([css("--c1"), css("--c4"), css("--c2")]), borderRadius: 10, borderSkipped: false }] },
     options: { plugins: { legend: { display: false } } } });
   document.getElementById("f").onsubmit = async (e) => {
     e.preventDefault();
     const f = new FormData(e.target);
-    await add("accounts", { name: f.get("name"), kind: f.get("kind"), role: f.get("role") || "", match: String(f.get("match") || "").trim(), phone: String(f.get("phone") || "").trim(), employer: String(f.get("employer") || "").trim(), rate: f.get("rate") === "" ? null : Number(f.get("rate")), value: Number(f.get("value")) });
+    await add("accounts", { name: f.get("name"), kind: f.get("kind"), role: f.get("role") || "", match: String(f.get("match") || "").trim(), phone: String(f.get("phone") || "").trim(), rate: f.get("rate") === "" ? null : Number(f.get("rate")), value: Number(f.get("value")) });
   };
   document.getElementById("cardForm").onsubmit = async (e) => {
     e.preventDefault();
@@ -1017,7 +1044,7 @@ function subsView() {
   for (let i = 5; i >= 0; i--) { const d = new Date(new Date().getFullYear(), new Date().getMonth() - i, 1); keys.push(`${d.getFullYear()}-${pad2(d.getMonth() + 1)}`); labels.push(`${MONTHS[d.getMonth()]} ${String(d.getFullYear()).slice(2)}`); }
   const vals = keys.map((k) => sum(data.transactions.filter((t) => t.type === "expense" && t.category === "Subscriptions" && monthKey(t.date) === k), (t) => t.amount));
   chart("c1", { type: "bar", data: { labels, datasets: [{ label: "Paid", data: vals, backgroundColor: gradBg(css("--c3")), borderRadius: 9, borderSkipped: false }] },
-    options: { plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } } } } });
+    options: { plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: css("--text") } } } } });
 
   document.getElementById("f").onsubmit = async (e) => {
     e.preventDefault();
@@ -1077,7 +1104,7 @@ const EDIT_SCHEMA = {
   transactions: [["type", "Type", "select", ["expense", "income", "transfer"]], ["dir", "Direction (transfers)", "select", [["out", "Money out"], ["in", "Money in"]]], ["category", "Category", "select", ALL_CATS], ["amount", "Amount (₹)", "number"], ["date", "Date", "date"], ["note", "Note", "text"], ["account", "Account / statement label", "text"]],
   budgets: [["category", "Category", "select", EXPENSE_CATS], ["limit", "Monthly limit (₹)", "number"]],
   investments: [["name", "Name", "text"], ["type", "Type", "select", INV_TYPES], ["invested", "Invested (₹)", "number"], ["current", "Current value (₹)", "number"]],
-  accounts: [["name", "Name", "text"], ["kind", "Type", "select", [["bank account", "Bank account"], ["asset", "Other asset"], ["liability", "Liability"]]], ["role", "Role", "select", ["", ...ACCT_ROLES]], ["match", "Identifiers (account no., UPI id, name; comma separated)", "text"], ["phone", "Phone / UPI number(s), comma separated", "text"], ["employer", "Employer name in salary credit", "text"], ["rate", "Interest % a year (loans, optional)", "number"], ["value", "Value (₹)", "number"]],
+  accounts: [["name", "Name", "text"], ["kind", "Type", "select", [["bank account", "Bank account"], ["asset", "Other asset"], ["liability", "Liability"]]], ["role", "Role", "select", ["", ...ACCT_ROLES]], ["match", "Identifiers (account no., UPI id, name; comma separated)", "text"], ["phone", "Phone / UPI number(s), comma separated", "text"], ["rate", "Interest % a year (loans, optional)", "number"], ["value", "Value (₹)", "number"]],
   goals: [["name", "Goal name", "text"], ["target", "Target (₹)", "number"], ["saved", "Saved so far (₹)", "number"]],
   cards: [["name", "Card name", "text"], ["last4", "Last 4 digits", "text"], ["network", "Network", "select", NETS], ["limit", "Credit limit (₹)", "number"], ["outstanding", "Outstanding (₹)", "number"], ["dueDay", "Due day (1-31)", "number"]],
   planning: [["area", "Area", "select", PLAN_AREAS], ["item", "Item", "text"], ["detail", "Detail", "text"], ["status", "Status", "select", PLAN_STATUS]],
@@ -1246,10 +1273,9 @@ function render() {
   const authBtn = $id("authBtn");
   $id("modeBadge").textContent = mode === "demo" ? "Demo mode" : "Firebase";
   $id("userName").textContent = user ? user.displayName || user.email : "";
-  $id("railNote").innerHTML = mode === "demo"
-    ? "<b>Demo data</b>You're viewing sample data stored in this browser. Add your Firebase config to save your own."
-    : "<b>Synced</b>Your data is stored privately in Firebase.";
-  $id("railNote").innerHTML += `<div class="muted sm" style="margin-top:6px;opacity:.7">Build ${APP_BUILD}</div>`;
+  const rn = $id("railNote");
+  rn.innerHTML = `<i class="sdot ${mode === "demo" ? "demo" : ""}"></i>${mode === "demo" ? "Demo" : "Synced"} · v${APP_BUILD}`;
+  rn.title = mode === "demo" ? "Sample data stored in this browser. Add your Firebase config to save your own." : "Your data is stored privately in Firebase.";
   const ob = overBudget();
   $id("bellDot").hidden = !ob.length; $id("bellDot").textContent = ob.length;
   $id("bell").title = ob.length ? `${ob.length} budget(s) exceeded` : "No budget alerts";
@@ -1289,7 +1315,6 @@ document.getElementById("tabs").onclick = (e) => {
   const b = e.target.closest("button[data-view]");
   if (b) goTo(b.dataset.view);
 };
-document.getElementById("collapseBtn").onclick = () => document.getElementById("shell").classList.toggle("collapsed");
 document.getElementById("bell").onclick = () => goTo("budgets");
 document.getElementById("q").oninput = (e) => {
   F.q = e.target.value.trim().toLowerCase();
