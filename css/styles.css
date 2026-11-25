@@ -126,7 +126,7 @@ main { padding: 8px clamp(16px, 3vw, 32px) 40px; max-width: 1280px; }
 .qa button b { font-size: 18px; line-height: 1; }
 .qa button:hover { border-color: var(--c1); }
 .txlist { display: grid; gap: 12px; }
-.tx { display: grid; grid-template-columns: 34px 1fr auto; gap: 10px; align-items: center; }
+.tx { display: grid; grid-template-columns: 34px minmax(0,1fr) auto; gap: 10px; align-items: center; }
 .avatar { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; font-weight: 600; color: #fff; font-size: 13px; }
 .tx .t { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tx .s { color: var(--muted); font-size: 12px; }
@@ -827,3 +827,8 @@ body.signedout .shell, body.signedout #wallPop { display: none; }
 .d-seg { display: flex; gap: 2px; height: 14px; margin: 6px 0 8px; } .d-seg i { display: block; border-radius: 4px; min-width: 6px; }
 .planst { background: transparent; cursor: pointer; }
 .hist2 .txlist { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); column-gap: 24px; }
+.hist2 .txlist { grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); }
+.hist2 .tx { min-width: 0; }
+.hist2 .tx > div:nth-child(2) { min-width: 0; overflow: hidden; }
+.hist2 .tx .t, .hist2 .tx .s { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hist2 .tx .a { white-space: nowrap; }
