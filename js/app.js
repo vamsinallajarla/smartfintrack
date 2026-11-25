@@ -4,8 +4,8 @@ const firebaseConfig = window.firebaseConfig;
 const configured = !!(firebaseConfig && firebaseConfig.apiKey && !firebaseConfig.apiKey.startsWith("YOUR_"));
 const mode = configured ? "firebase" : "demo";
 
-const COLS = ["transactions", "budgets", "investments", "accounts", "goals", "cards", "subs"];
-const data = { transactions: [], budgets: [], investments: [], accounts: [], goals: [], cards: [], subs: [] };
+const COLS = ["transactions", "budgets", "investments", "accounts", "goals", "cards", "subs", "commitments"];
+const data = { transactions: [], budgets: [], investments: [], accounts: [], goals: [], cards: [], subs: [], commitments: [] };
 let user = null;
 let authReady = false;
 
@@ -140,7 +140,7 @@ async function login() {
 const logout = () => fb.signOut(fb.auth);
 
 // ---------- CRUD ----------
-const APP_BUILD = 43;
+const APP_BUILD = 45;
 // run a Firebase write; show the real reason on screen instead of failing silently
 async function fbWrite(what, fn) {
   try { return await fn(); }
@@ -181,6 +181,7 @@ const INCOME_CATS = ["Salary", "Business", "Interest", "Other"];
 const XFER_CATS = ["Own account", "Loan repayment", "Card bill", "FD / RD"];
 const ACCT_ROLES = ["Savings", "Salary", "Current", "UPI spend", "Loan", "Other"];
 const EXPENSE_CATS = ["Food", "Rent", "Transport", "Utilities", "Shopping", "Health", "Entertainment", "Subscriptions", "Other"];
+const COMMIT_TYPES = ["EMI", "Rent", "Insurance", "School / tuition", "Utilities", "Other"];
 const INV_TYPES = ["Stock", "Mutual Fund", "FD", "RD", "Fixed Income", "Gold", "Crypto", "Other"];
 const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 const pal = () => ["--c1", "--c2", "--c3", "--c4", "--c5", "--c6"].map(css);
@@ -522,7 +523,7 @@ function transactions() {
   const li = sum(all.filter((t) => t.type === "income"), (t) => t.amount), le = sum(all.filter((t) => t.type === "expense"), (t) => t.amount);
   $app.innerHTML = `
     <div class="card">
-      <h2 class="h2row">Add transaction <button type="button" class="ghost sm" id="impBtn">⬆ Import statements</button></h2>
+      <h2 class="h2row">Add transaction <span><button type="button" class="ghost sm" id="impBtn">⬆ Import statements</button> <button type="button" class="ghost sm" id="clrBtn">🗑 Clear imported</button></span></h2>
       <form class="inline" id="f">
         <select name="type" id="typeSel"><option>expense</option><option>income</option></select>
         <select name="category" id="catSel">${opts(EXPENSE_CATS)}</select>
@@ -544,6 +545,7 @@ function transactions() {
     </div>`;
   document.getElementById("xferScan").onclick = () => window.impScanLedger && window.impScanLedger();
   document.getElementById("impBtn").onclick = () => window.openImport && window.openImport();
+  document.getElementById("clrBtn").onclick = () => window.impClear && window.impClear();
   const typeSel = document.getElementById("typeSel");
   typeSel.onchange = () => (document.getElementById("catSel").innerHTML = opts(typeSel.value === "income" ? INCOME_CATS : EXPENSE_CATS));
   document.getElementById("f").onsubmit = async (e) => {
@@ -554,11 +556,56 @@ function transactions() {
   bindDelete("transactions");
 }
 
+// fixed monthly commitments (EMIs, rent, insurance, fees): must be paid, kept apart from budget allocation
+const commitActive = (c, m) => !c.until || String(c.until) >= m;
+const commitLeft = (c, m) => (c.until ? (+c.until.slice(0, 4) - +m.slice(0, 4)) * 12 + (+c.until.slice(5, 7) - +m.slice(5, 7)) + 1 : null);
+function commitPaid(c, m) {
+  const nm = String(c.name || "").trim().toLowerCase(), amt = Number(c.amount) || 0;
+  return data.transactions.find((t) => monthKey(t.date) === m && (t.type === "expense" || (t.type === "transfer" && t.dir !== "in")) &&
+    ((nm.length >= 3 && String(t.note || "").toLowerCase().includes(nm)) || (amt > 0 && Math.abs(Number(t.amount) - amt) < 1 && (t.category === c.type || /emi|loan|rent|insur/i.test(`${t.category} ${t.note}`)))));
+}
 function budgets() {
   const m = budgetMonth();
   const spent = (cat) => sum(data.transactions.filter((t) => t.type === "expense" && t.category === cat && monthKey(t.date) === m), (t) => t.amount);
+  const cm = data.commitments.filter((c) => commitActive(c, m)).sort((a, b) => (a.day || 0) - (b.day || 0));
+  const cTotal = sum(cm, (c) => c.amount), paidList = cm.map((c) => [c, commitPaid(c, m)]);
+  const cPaid = sum(paidList.filter(([, p]) => p), ([c]) => c.amount);
+  const monthInc = (k) => sum(data.transactions.filter((t) => t.type === "income" && monthKey(t.date) === k), (t) => t.amount);
+  let income = monthInc(m), incLabel = "Income this month";
+  if (!income) {
+    const prev = [1, 2, 3].map((i) => { const d = new Date(+m.slice(0, 4), +m.slice(5, 7) - 1 - i, 1); return monthInc(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`); }).filter(Boolean);
+    if (prev.length) { income = sum(prev, (x) => x) / prev.length; incLabel = "Expected income (recent average)"; }
+  }
+  const bTotal = sum(data.budgets, (b) => b.limit), free = income - cTotal - bTotal;
+  const today = new Date(), isNow = m === thisMonth();
   $app.innerHTML = `
-    <div class="card">
+    <div class="grid kpis">
+      <div class="card kpi"><div class="label">${incLabel}</div><div class="value">${fmt(income)}</div></div>
+      <div class="card kpi"><div class="label">Fixed commitments</div><div class="value">${fmt(cTotal)}</div><div class="muted sm">${fmt(cPaid)} paid · ${fmt(cTotal - cPaid)} to go</div></div>
+      <div class="card kpi"><div class="label">Budgets allocated</div><div class="value">${fmt(bTotal)}</div></div>
+      <div class="card kpi"><div class="label">Left after both</div><div class="value ${free >= 0 ? "good" : "bad"}">${fmt(free)}</div></div>
+    </div>
+    <div class="card" id="commitBox">
+      <h2>Fixed monthly commitments (${m})</h2>
+      <p class="muted sm">EMIs and expenses that cannot be skipped. They are separate from budgets and come off your income first. A commitment shows as paid when a matching ledger entry (same name or amount) exists this month.</p>
+      <form class="inline" id="cf">
+        <input name="name" placeholder="Name (e.g. Home loan EMI)" required maxlength="60">
+        <select name="type">${opts(COMMIT_TYPES)}</select>
+        <input name="amount" type="number" min="1" step="0.01" placeholder="Amount (₹ / month)" required>
+        <input name="day" type="number" min="1" max="31" placeholder="Due day" required>
+        <input name="until" type="month" title="Last month (optional, for EMIs)">
+        <button class="primary">Add</button>
+      </form>
+      <div class="scroll"><table><thead><tr><th>Name</th><th>Type</th><th class="num">Amount</th><th>Due</th><th>Status</th><th></th></tr></thead>
+      <tbody>${paidList.map(([c, p]) => {
+        const left = commitLeft(c, m), late = !p && isNow && (c.day || 1) < today.getDate();
+        return `<tr><td>${esc(c.name)}${left ? ` <span class="muted sm">${left} month${left === 1 ? "" : "s"} left</span>` : ""}</td><td><span class="pill">${esc(c.type)}</span></td>
+        <td class="num">${fmt(c.amount)}</td><td>${esc(c.day || 1)}</td>
+        <td>${p ? `<span class="pill ok">Paid ${esc(String(p.date).slice(5))}</span>` : late ? `<span class="pill bad">Overdue?</span>` : `<span class="pill">Due</span>`}</td>
+        <td><button class="del" data-del="${esc(c.id)}" title="Delete">✕</button></td></tr>`;
+      }).join("") || `<tr><td colspan="6" class="muted">No fixed commitments yet.</td></tr>`}</tbody></table></div>
+    </div>
+    <div class="card" id="budgetBox">
       <h2>Monthly budgets (${m})</h2>
       <form class="inline" id="f">
         <select name="category">${opts(EXPENSE_CATS)}</select>
@@ -573,12 +620,18 @@ function budgets() {
           <div class="bar ${s > b.limit ? "over" : pct >= 80 ? "warn" : ""}"><div style="width:${pct}%"></div></div></div>`;
       }).join("") || `<p class="muted">No budgets yet.</p>`}</div>
     </div>`;
+  document.getElementById("cf").onsubmit = async (e) => {
+    e.preventDefault();
+    const f = new FormData(e.target);
+    await add("commitments", { name: f.get("name").trim(), type: f.get("type"), amount: Number(f.get("amount")), day: Math.min(31, Math.max(1, Number(f.get("day")) || 1)), until: f.get("until") || "" });
+  };
   document.getElementById("f").onsubmit = async (e) => {
     e.preventDefault();
     const f = new FormData(e.target);
     await add("budgets", { category: f.get("category"), limit: Number(f.get("limit")) });
   };
-  bindDelete("budgets");
+  bindDelete("commitments", document.getElementById("commitBox"));
+  bindDelete("budgets", document.getElementById("budgetBox"));
 }
 
 function investments() {
@@ -980,6 +1033,7 @@ const EDIT_SCHEMA = {
   accounts: [["name", "Name", "text"], ["kind", "Type", "select", [["bank account", "Bank account"], ["asset", "Other asset"], ["liability", "Liability"]]], ["role", "Role", "select", ["", ...ACCT_ROLES]], ["match", "Identifiers (account no., UPI id, name; comma separated)", "text"], ["value", "Value (₹)", "number"]],
   goals: [["name", "Goal name", "text"], ["target", "Target (₹)", "number"], ["saved", "Saved so far (₹)", "number"]],
   cards: [["name", "Card name", "text"], ["last4", "Last 4 digits", "text"], ["network", "Network", "select", NETS], ["limit", "Credit limit (₹)", "number"], ["outstanding", "Outstanding (₹)", "number"], ["dueDay", "Due day (1-31)", "number"]],
+  commitments: [["name", "Name", "text"], ["type", "Type", "select", COMMIT_TYPES], ["amount", "Amount (₹ / month)", "number"], ["day", "Due day (1-31)", "number"], ["until", "Last month (optional, for EMIs)", "month"]],
   subs: [["name", "Name", "text"], ["category", "Category", "select", SUB_CATS], ["amount", "Amount (₹)", "number"], ["cycle", "Billing cycle", "select", [["monthly", "Monthly"], ["yearly", "Yearly"]]], ["day", "Billing day (1-31)", "number"], ["month", "Billing month (yearly, 1-12)", "number"]],
 };
 function openEdit(col, id) {
@@ -1029,14 +1083,15 @@ function openEdit(col, id) {
     if (col === "transactions") patch.dir = patch.type === "income" ? "in" : patch.type === "expense" ? "out" : patch.dir || "out";
     if (col === "cards") patch.last4 = String(patch.last4 || "").replace(/\D/g, "").slice(0, 4);
     if (col === "subs") { patch.day = Math.min(31, Math.max(1, patch.day || 1)); patch.month = patch.cycle === "yearly" ? Math.min(12, Math.max(1, patch.month || 1)) : null; }
+    if (col === "commitments") patch.day = Math.min(31, Math.max(1, patch.day || 1));
     if (col === "cards") patch.dueDay = Math.min(31, Math.max(1, patch.dueDay || 1));
     close();
     await update(col, id, patch);
   };
   form.querySelector("input,select").focus();
 }
-function bindDelete(col) {
-  $app.querySelectorAll("[data-del]").forEach((b) => {
+function bindDelete(col, root = $app) {
+  root.querySelectorAll("[data-del]").forEach((b) => {
     b.onclick = () => remove(col, b.dataset.del);
     if (!b.previousElementSibling?.matches?.("[data-edit]")) {
       const e = document.createElement("button");
@@ -1044,7 +1099,7 @@ function bindDelete(col) {
       b.before(e);
     }
   });
-  $app.querySelectorAll("[data-edit]").forEach((e) => (e.onclick = () => openEdit(col, e.dataset.edit)));
+  root.querySelectorAll("[data-edit]").forEach((e) => (e.onclick = () => openEdit(col, e.dataset.edit)));
 }
 
 // ---------- shell ----------

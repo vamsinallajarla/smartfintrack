@@ -477,5 +477,31 @@ function impScanLedger() {
     close();
   };
 }
+// bulk-delete imported entries (everything that carries a statement account label), by account
+function impClear() {
+  const by = {};
+  data.transactions.filter((t) => t.account).forEach((t) => (by[t.account] = by[t.account] || []).push(t));
+  const names = Object.keys(by);
+  document.getElementById("clrModal")?.remove();
+  const m = document.createElement("div"); m.id = "clrModal"; m.className = "modal";
+  m.innerHTML = `<div class="modal-box card imp-box"><div class="card-title"><h3>Clear imported entries</h3><button type="button" class="del" data-x title="Close">✕</button></div>
+    ${names.length ? `<p class="muted sm">Entries imported from statements, grouped by account label. Entries you added by hand are never touched. This cannot be undone.</p>
+    <table class="imptable"><tbody>${names.map((n, i) => `<tr><td><input type="checkbox" data-c="${i}" checked></td><td>${esc(n)}</td><td class="num">${by[n].length} entries</td></tr>`).join("")}</tbody></table>
+    <div class="modal-acts"><button type="button" class="ghost" data-x>Cancel</button><button type="button" class="primary" id="clrGo">Delete selected</button></div>`
+    : `<p class="muted">No imported entries found. Only entries imported from statements carry an account label.</p>`}</div>`;
+  document.body.appendChild(m);
+  const close = () => m.remove();
+  m.querySelectorAll("[data-x]").forEach((b) => (b.onclick = close));
+  m.addEventListener("mousedown", (e) => { if (e.target === m) close(); });
+  const go = document.getElementById("clrGo");
+  if (go) go.onclick = async () => {
+    const pick = names.filter((_, i) => m.querySelector(`[data-c="${i}"]`).checked).flatMap((n) => by[n]);
+    if (!pick.length || !confirm(`Delete ${pick.length} imported entries permanently?`)) return;
+    go.disabled = true; go.textContent = "Deleting…";
+    for (let i = 0; i < pick.length; i += 25) await Promise.all(pick.slice(i, i + 25).map((t) => remove("transactions", t.id)));
+    close();
+  };
+}
+window.impClear = impClear;
 window.impScanLedger = impScanLedger;
 window.openImport = openImport;
