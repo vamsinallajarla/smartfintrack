@@ -4,8 +4,8 @@ const firebaseConfig = window.firebaseConfig;
 const configured = !!(firebaseConfig && firebaseConfig.apiKey && !firebaseConfig.apiKey.startsWith("YOUR_"));
 const mode = configured ? "firebase" : "demo";
 
-const COLS = ["transactions", "budgets", "investments", "accounts", "goals", "cards", "subs", "commitments", "planning", "rules"];
-const data = { transactions: [], budgets: [], investments: [], accounts: [], goals: [], cards: [], subs: [], commitments: [], planning: [], rules: [] };
+const COLS = ["transactions", "budgets", "investments", "accounts", "goals", "cards", "subs", "commitments", "planning", "rules", "inbox"];
+const data = { transactions: [], budgets: [], investments: [], accounts: [], goals: [], cards: [], subs: [], commitments: [], planning: [], rules: [], inbox: [] };
 let user = null;
 let authReady = false;
 
@@ -140,7 +140,7 @@ async function login() {
 const logout = () => fb.signOut(fb.auth);
 
 // ---------- CRUD ----------
-const APP_BUILD = 55;
+const APP_BUILD = 57;
 // run a Firebase write; show the real reason on screen instead of failing silently
 async function fbWrite(what, fn) {
   try { return await fn(); }
@@ -454,6 +454,7 @@ function overview() {
   overBudget().forEach((b) => alerts.push(["Over budget", b.category, fmt(b.over), `over this month's budget (${esc(monthLabel(bm))})`]));
   cmAct.filter((c) => (c.day || 1) < now.getDate() && !commitPaid(c, thisM)).forEach((c) => alerts.push(["Payment missing", c.name, fmt(c.amount), "not found in your ledger this month"]));
   upcoming.filter((x) => daysTo(x.d) <= 7).forEach((x) => alerts.push(["Due soon", x.n, fmt(x.a), daysTo(x.d) === 0 ? "due today" : `due in ${daysTo(x.d)} day${daysTo(x.d) === 1 ? "" : "s"}`]));
+  if (data.inbox.length) alerts.push(["SMS inbox", "Pending review", String(data.inbox.length), "bank SMS waiting on the Ledger page"]);
   if (data.accounts.length && reserveM < 6) alerts.push(["Emergency fund", "Cash reserve", reserveM.toFixed(1) + " mo", "months of spending covered, goal 6"]);
   debts.filter((d) => d.r != null && d.r >= HIGH_RATE).forEach((d) => alerts.push(["High-interest debt", d.n, d.r + "%", "interest a year"]));
   if (emiTotal > 0 && dti > 40) alerts.push(["EMI load", "EMIs vs income", dti.toFixed(0) + "%", "of income, a common limit is 40%"]);
@@ -513,18 +514,18 @@ function overview() {
         ${allocRows.length ? `<div class="d-ring"><div class="dring"><canvas id="dc_al"></canvas><div class="dtot"><b>${compact(allocTot)}</b><small>assets</small></div></div><div class="d-leg">${legend(allocRows)}</div></div>` : `<p class="muted">Add bank accounts and holdings to see your mix.</p>`}</div>
     </div>
     <div class="d-cols">
-      <div class="card"><div class="card-title"><h3>Debt and interest</h3><button class="link" data-go="networth">Edit</button></div><p class="muted sm">Bar length is the amount owed. Add an interest rate to a loan under Net worth.</p>${debtRows || `<p class="muted">No debts recorded.</p>`}</div>
-      <div class="card"><div class="card-title"><h3>Bills coming up</h3><button class="link" data-go="budgets">Commitments</button></div><p class="muted sm">Next 30 days · ${fmt(sum(upcoming, (x) => x.a))}</p>
+      <div class="card w6"><div class="card-title"><h3>Debt and interest</h3><button class="link" data-go="networth">Edit</button></div><p class="muted sm">Bar length is the amount owed. Add an interest rate to a loan under Net worth.</p>${debtRows || `<p class="muted">No debts recorded.</p>`}</div>
+      <div class="card w6"><div class="card-title"><h3>Bills coming up</h3><button class="link" data-go="budgets">Commitments</button></div><p class="muted sm">Next 30 days · ${fmt(sum(upcoming, (x) => x.a))}</p>
         ${upcoming.length ? `<div class="d-legend">${Object.entries(typeCol).map(([t, c]) => `<span><i class="dot" style="background:${c}"></i>${esc(t)}</span>`).join("")}</div><div class="dchart short"><canvas id="dc_bl"></canvas></div>` : `<p class="muted">Nothing due in the next 30 days.</p>`}</div>
     </div>
-    <div class="card"><h3>Alerts</h3>
+    <div class="card alertsbox"><h3>Alerts</h3>
       <div class="scroll"><table><thead><tr><th>Alert</th><th>Item</th><th class="num">Value</th><th>Meaning</th></tr></thead>
       <tbody>${alerts.map(([a, i, v, m]) => `<tr><td>${esc(a)}</td><td>${esc(i)}</td><td class="num">${esc(v)}</td><td class="muted">${m}</td></tr>`).join("") || `<tr><td colspan="4" class="muted">No alerts right now.</td></tr>`}</tbody></table></div></div>
     <div class="d-cols">
-      <div class="card"><h3>Upcoming bills and subscriptions</h3>
+      <div class="card w6"><h3>Upcoming bills and subscriptions</h3>
         <div class="scroll"><table><thead><tr><th>Bill</th><th>Type</th><th>Due</th><th class="num">Amount</th></tr></thead>
         <tbody>${upcoming.map((x) => `<tr><td>${esc(x.n)}</td><td><span class="pill">${esc(x.t)}</span></td><td>${esc(dShort(x.d))} <span class="muted sm">${daysTo(x.d) === 0 ? "today" : "in " + daysTo(x.d) + "d"}</span></td><td class="num">${fmt(x.a)}</td></tr>`).join("") || `<tr><td colspan="4" class="muted">Nothing due in 30 days.</td></tr>`}</tbody></table></div></div>
-      <div class="card" id="planBox"><div class="card-title"><h3>Insurance, tax, retirement and estate checklist</h3>${pl.length ? "" : `<button type="button" class="ghost sm" id="plSeed">Add starter list</button>`}</div>
+      <div class="card w6" id="planBox"><div class="card-title"><h3>Insurance, tax, retirement and estate checklist</h3>${pl.length ? "" : `<button type="button" class="ghost sm" id="plSeed">Add starter list</button>`}</div>
         ${pl.length ? `<div class="d-seg">${PLAN_STATUS.filter((s) => plCount(s)).map((s) => `<i style="flex:${plCount(s)};background:${plCol[s]}"></i>`).join("")}</div><div class="d-legend">${PLAN_STATUS.map((s) => `<span><i class="dot" style="background:${plCol[s]}"></i><b>${plCount(s)}</b> ${s}</span>`).join("")}</div>` : `<p class="muted sm">Track the non-money parts of your plan: cover, tax, retirement and estate. Tap a status to change it.</p>`}
         ${pl.length ? `<div class="scroll"><table><thead><tr><th>Area</th><th>Item</th><th>Status</th><th></th></tr></thead><tbody>${pl.map((p) => `<tr><td>${esc(p.area)}</td><td>${esc(p.item)}<div class="muted sm">${esc(p.detail || "")}</div></td><td><button type="button" class="pill planst" data-pl="${esc(p.id)}" style="border-color:${plCol[p.status] || "var(--line)"};color:${plCol[p.status] || "inherit"}">${esc(p.status)}</button></td><td><button class="del" data-del="${esc(p.id)}" title="Delete">✕</button></td></tr>`).join("")}</tbody></table></div>` : ""}
         <form class="inline" id="plf"><select name="area">${opts(PLAN_AREAS)}</select><input name="item" placeholder="Add item" required maxlength="80"><input name="detail" placeholder="Detail (optional)" maxlength="120"><button class="primary">Add</button></form></div>
@@ -571,6 +572,7 @@ function transactions() {
   xf.forEach((t) => { const k = t.account || "Unlabelled"; const o = (xAcc[k] = xAcc[k] || { i: 0, o: 0 }); o[t.dir === "in" ? "i" : "o"] += Number(t.amount) || 0; });
   const li = sum(all.filter((t) => t.type === "income"), (t) => t.amount), le = sum(all.filter((t) => t.type === "expense"), (t) => t.amount);
   $app.innerHTML = `
+    ${window.smsCard ? window.smsCard() : ""}
     <div class="card">
       <h2 class="h2row">Add transaction <span><button type="button" class="ghost sm" id="impBtn">⬆ Import statements</button> <button type="button" class="ghost sm" id="clrBtn">🗑 Clear imported</button></span></h2>
       <form class="inline" id="f">
@@ -592,6 +594,7 @@ function transactions() {
       <p class="muted">Counted separately: not income, not expense, not in savings rate. Own-account moves, money from friends/family, refunds and cashback land here; only salary counts as income. ${xf.length} entr${xf.length === 1 ? "y" : "ies"} · Moved out <b>${fmt(xOut)}</b> · Moved in <b>${fmt(xIn)}</b> · Net left your accounts <b>${fmt(xOut - xIn)}</b> <span class="sm">(loans, FDs or accounts you haven't imported)</span></p>
       ${xf.length ? `<div class="scroll"><table><thead><tr><th>Account</th><th class="num">Out</th><th class="num">In</th><th class="num">Net</th></tr></thead><tbody>${Object.entries(xAcc).map(([k, v]) => `<tr><td>${esc(k)}</td><td class="num">${fmt(v.o)}</td><td class="num">${fmt(v.i)}</td><td class="num">${fmt(v.i - v.o)}</td></tr>`).join("")}</tbody></table></div>` : `<p class="muted sm">None yet. Import statements from several accounts, add your accounts under Net worth (with account numbers / UPI ids), or tap Find transfers.</p>`}
     </div>`;
+  if (window.smsBind) window.smsBind($app);
   document.getElementById("xferScan").onclick = () => window.impScanLedger && window.impScanLedger();
   document.getElementById("impBtn").onclick = () => window.openImport && window.openImport();
   document.getElementById("clrBtn").onclick = () => window.impClear && window.impClear();

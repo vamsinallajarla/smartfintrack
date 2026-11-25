@@ -21,3 +21,4 @@ While `js/firebase-config.js` has placeholder values, the app uses sample data s
 4. Reload the app and sign in with Google. Data is stored under `users/{uid}/...`.
 
 The web config is not a secret; the Firestore rules are what protect your data.
+- SMS inbox setup: see SMS-SETUP.md
