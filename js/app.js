@@ -140,7 +140,7 @@ async function login() {
 const logout = () => fb.signOut(fb.auth);
 
 // ---------- CRUD ----------
-const APP_BUILD = 59;
+const APP_BUILD = 61;
 // run a Firebase write; show the real reason on screen instead of failing silently
 async function fbWrite(what, fn) {
   try { return await fn(); }
@@ -1299,7 +1299,7 @@ function render() {
     authBtn.hidden = false; authBtn.textContent = "Reset demo data";
     authBtn.onclick = () => confirm("Reset to sample data?") && resetDemo();
   }
-  $app.classList.toggle("fit", view !== "overview" && view !== "networth");
+  $app.classList.remove("fit");
   $app.dataset.view = view;
   $app.classList.toggle("enter", animateNext);
   try { views[view](); }

@@ -950,3 +950,74 @@ main .page-title, main .page-sub { margin-top: 0; }
 .nwgrid .ccscroll { max-height: 520px; overflow-y: auto; padding-right: 4px; }
 .nwgrid .chart-wrap { height: 200px; }
 .ownids { min-width: 520px; }
+
+/* ===== Net worth: compact ===== */
+main[data-view="networth"] { padding-top: 8px; }
+main[data-view="networth"] .page-title { font-size: 20px; margin: 0; } main[data-view="networth"] .page-sub { margin: 0 0 8px; font-size: 12px; }
+main[data-view="networth"] .grid { gap: 10px; }
+main[data-view="networth"] .grid.kpis { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin-bottom: 10px; }
+main[data-view="networth"] .kpi { padding: 8px 12px; border-radius: 12px; }
+main[data-view="networth"] .kpi .label { font-size: 9.5px; margin-bottom: 1px; }
+main[data-view="networth"] .kpi .value { font-size: 18px; }
+main[data-view="networth"] .card { padding: 11px 13px; border-radius: 14px; }
+main[data-view="networth"] .card h2 { margin: 0 0 7px; font-size: 10.5px; }
+main[data-view="networth"] form.inline { gap: 6px; margin-bottom: 8px; }
+main[data-view="networth"] form.inline input, main[data-view="networth"] form.inline select, main[data-view="networth"] form.inline button { padding: 5px 9px; font-size: 12.5px; border-radius: 8px; }
+main[data-view="networth"] table td, main[data-view="networth"] table th { padding: 4px 8px; font-size: 12.5px; }
+main[data-view="networth"] .subico { transform: scale(.78); transform-origin: left center; margin-right: -6px; }
+main[data-view="networth"] .subname { gap: 6px; }
+main[data-view="networth"] .nwgrid .scroll { max-height: 430px; }
+main[data-view="networth"] .nwgrid .ccscroll { max-height: 560px; }
+main[data-view="networth"] .nwgrid .chart-wrap { height: 150px; margin-top: 8px; }
+main[data-view="networth"] .cclist { gap: 8px; }
+main[data-view="networth"] .ccard { padding: 10px 13px; border-radius: 13px; }
+main[data-view="networth"] .cc-num { margin: 8px 0 6px; font-size: 12.5px; }
+main[data-view="networth"] .cc-row b { font-size: 15px; } main[data-view="networth"] .cc-row small { font-size: 10px; }
+main[data-view="networth"] .cc-util { margin: 6px 0 3px; height: 5px; }
+main[data-view="networth"] .ccdetail { margin-top: 8px; }
+main[data-view="networth"] details.addcard summary { font-size: 12.5px; }
+main[data-view="networth"] .rulebox h2 { margin-bottom: 4px; }
+main[data-view="networth"] .rulegrid { gap: 8px; }
+main[data-view="networth"] .rulegrid input { padding: 5px 9px; font-size: 12.5px; }
+main[data-view="networth"] .rulebox .primary { padding: 6px 16px; width: auto; }
+main[data-view="networth"] .ownids input { padding: 4px 8px; font-size: 12px; }
+
+/* ===== all pages: compact, scrolling ===== */
+main[data-view]:not([data-view="overview"]) { padding-top: 8px; }
+main[data-view]:not([data-view="overview"]) .page-title { font-size: 20px; margin: 0; } main[data-view]:not([data-view="overview"]) .page-sub { margin: 0 0 8px; font-size: 12px; }
+main[data-view]:not([data-view="overview"]) .grid { gap: 10px; }
+main[data-view]:not([data-view="overview"]) .grid.kpis { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin-bottom: 10px; }
+main[data-view]:not([data-view="overview"]) .kpi { padding: 8px 12px; border-radius: 12px; }
+main[data-view]:not([data-view="overview"]) .kpi .label { font-size: 9.5px; margin-bottom: 1px; }
+main[data-view]:not([data-view="overview"]) .kpi .value { font-size: 18px; }
+main[data-view]:not([data-view="overview"]) .card { padding: 11px 13px; border-radius: 14px; }
+main[data-view]:not([data-view="overview"]) .card h2 { margin: 0 0 7px; font-size: 10.5px; }
+main[data-view]:not([data-view="overview"]) form.inline { gap: 6px; margin-bottom: 8px; }
+main[data-view]:not([data-view="overview"]) form.inline input, main[data-view]:not([data-view="overview"]) form.inline select, main[data-view]:not([data-view="overview"]) form.inline button { padding: 5px 9px; font-size: 12.5px; border-radius: 8px; }
+main[data-view]:not([data-view="overview"]) table td, main[data-view]:not([data-view="overview"]) table th { padding: 4px 8px; font-size: 12.5px; }
+main[data-view]:not([data-view="overview"]) .subico { transform: scale(.78); transform-origin: left center; margin-right: -6px; }
+main[data-view]:not([data-view="overview"]) .subname { gap: 6px; }
+main[data-view]:not([data-view="overview"]) .nwgrid .scroll { max-height: 430px; }
+main[data-view]:not([data-view="overview"]) .nwgrid .ccscroll { max-height: 560px; }
+main[data-view]:not([data-view="overview"]) .nwgrid .chart-wrap { height: 150px; margin-top: 8px; }
+main[data-view]:not([data-view="overview"]) .cclist { gap: 8px; }
+main[data-view]:not([data-view="overview"]) .ccard { padding: 10px 13px; border-radius: 13px; }
+main[data-view]:not([data-view="overview"]) .cc-num { margin: 8px 0 6px; font-size: 12.5px; }
+main[data-view]:not([data-view="overview"]) .cc-row b { font-size: 15px; } main[data-view]:not([data-view="overview"]) .cc-row small { font-size: 10px; }
+main[data-view]:not([data-view="overview"]) .cc-util { margin: 6px 0 3px; height: 5px; }
+main[data-view]:not([data-view="overview"]) .ccdetail { margin-top: 8px; }
+main[data-view]:not([data-view="overview"]) details.addcard summary { font-size: 12.5px; }
+main[data-view]:not([data-view="overview"]) .rulebox h2 { margin-bottom: 4px; }
+main[data-view]:not([data-view="overview"]) .rulegrid { gap: 8px; }
+main[data-view]:not([data-view="overview"]) .rulegrid input { padding: 5px 9px; font-size: 12.5px; }
+main[data-view]:not([data-view="overview"]) .rulebox .primary { padding: 6px 16px; width: auto; }
+main[data-view]:not([data-view="overview"]) .ownids input { padding: 4px 8px; font-size: 12px; }
+
+main[data-view]:not([data-view="overview"]) { max-width: none; }
+main[data-view]:not([data-view="overview"]) .filters { margin-bottom: 8px; gap: 6px; }
+main[data-view]:not([data-view="overview"]) .filters select, main[data-view]:not([data-view="overview"]) .filters input, main[data-view]:not([data-view="overview"]) .filters button { padding: 5px 9px; font-size: 12.5px; }
+main[data-view]:not([data-view="overview"]) .scroll { max-height: 64vh; overflow-y: auto; }
+main[data-view]:not([data-view="overview"]) .scroll thead th { position: sticky; top: 0; background: color-mix(in srgb, var(--card) 80%, transparent); backdrop-filter: blur(10px); z-index: 1; }
+main[data-view]:not([data-view="overview"]) .chart-wrap { height: 190px; }
+main[data-view]:not([data-view="overview"]) .budget-row { margin-bottom: 8px; }
+main[data-view]:not([data-view="overview"]) .two { margin-bottom: 10px; }
