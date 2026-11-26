@@ -161,6 +161,7 @@ function impMarkTransfers(all) {
     const hit = own.find((o) => o.phone ? new RegExp("(?<!\\d)(?:\\+?91[\\s-]?)?" + o.id + "(?!\\d)").test(t.note || "") : n.includes(o.id) && (o.name.toLowerCase() !== acc || !/\d/.test(o.id)) && (!o.card || /card|cc|bill|payment/.test(n)));
     const mm = hit ? null : String(t.note || "").match(/(?<!\d)(\d)[Xx*]{5,7}(\d{3})(?!\d)/); // masked own number, e.g. 9XXXXXX951
     const maskHit = mm && own.some((o) => o.phone && o.id[0] === mm[1] && o.id.slice(-3) === mm[2]);
+    if ((window.customKw ? window.customKw() : []).some((k) => k.cls === "Expense (not a transfer)" && k.words.some((w) => n.includes(w)))) { t.noxf = true; return; } // user says: always a normal expense
     const ck = (window.customKw ? window.customKw() : []).find((k) => window.KW_XFER.includes(k.cls) && k.words.some((w) => n.includes(w)));
     if (ck) { t.xfer = "own"; t.xcat = ck.cls; }
     else if (hit || maskHit) { t.xfer = "own"; t.xcat = impXferCat(t, hit || { loan: false }); }
@@ -168,9 +169,9 @@ function impMarkTransfers(all) {
   });
   const grp = (t) => t.file || t.account || "";
   const day = (d) => Date.parse(d + "T00:00:00Z") / 864e5;
-  const inc = all.filter((t) => t.type === "income" || (t.type === "transfer" && t.dir === "in"));
+  const inc = all.filter((t) => !t.noxf && (t.type === "income" || (t.type === "transfer" && t.dir === "in")));
   const used = new Set();
-  all.filter((t) => t.dir !== "in").forEach((e) => {
+  all.filter((t) => t.dir !== "in" && !t.noxf).forEach((e) => {
     const m = inc.find((i) => !used.has(i) && grp(i) && grp(e) && grp(i) !== grp(e) && impAmt(i) === impAmt(e) && Math.abs(day(i.date) - day(e.date)) <= 3);
     if (m) { used.add(m); e.xfer = m.xfer = e.xfer || "paired"; m.xfer = m.xfer || "paired"; e.xcat = e.xcat || impXferCat(e, null); m.xcat = m.xcat || impXferCat(m, null); }
   });

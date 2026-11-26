@@ -1024,3 +1024,11 @@ main[data-view]:not([data-view="overview"]) .two { margin-bottom: 10px; }
 .kwtable select { width: 100%; padding: 5px 8px; font-size: 12px; }
 .kwtable td { padding: 3px 6px; }
 .kwtable { min-width: 460px; }
+
+.baltiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin: 6px 0 8px; }
+.baltile { padding: 8px 10px; border-radius: 12px; border: 1px solid var(--line); background: color-mix(in srgb, var(--card) 55%, transparent); }
+.baltile.total { border-style: dashed; }
+.balname { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+.balname img, .balname svg { width: 18px; height: 18px; }
+.balval { font: 600 17px "Fraunces", serif; margin: 2px 0; }
+.asofin { padding: 3px 6px; font-size: 11.5px; width: 128px; }

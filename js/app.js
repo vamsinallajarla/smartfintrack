@@ -140,7 +140,7 @@ async function login() {
 const logout = () => fb.signOut(fb.auth);
 
 // ---------- CRUD ----------
-const APP_BUILD = 64;
+const APP_BUILD = 66;
 // run a Firebase write; show the real reason on screen instead of failing silently
 async function fbWrite(what, fn) {
   try { return await fn(); }
@@ -268,8 +268,29 @@ function lastMonths(n) {
   return out;
 }
 
+// ---------- account balances: opening balance + ledger movements after the "as of" date ----------
+const acctDigits = (x) => (String(x || "").match(/(\d{3,4})\s*$/) || [])[1] || "";
+function txAccount(t) {
+  const label = String(t.account || "").trim().toLowerCase(); if (!label) return null;
+  const banks = data.accounts.filter((a) => a.kind === "bank account");
+  const byName = banks.find((x) => String(x.name).trim().toLowerCase() === label); if (byName) return byName;
+  const d = acctDigits(label); if (!d) return null;
+  return banks.find((x) => String(x.match || "").split(/[,;\n]/).some((m) => m.trim().length >= 3 && m.trim().endsWith(d.slice(-3)))) || null;
+}
+function acctBal(a) {
+  const open = Number(a.value) || 0;
+  if (a.kind !== "bank account" || !a.asof) return { open, inn: 0, out: 0, cur: open, tracking: false };
+  let inn = 0, out = 0;
+  data.transactions.forEach((t) => {
+    if (String(t.date) <= a.asof || txAccount(t) !== a) return;
+    const amt = Number(t.amount) || 0;
+    if (t.type === "income" || (t.type === "transfer" && t.dir === "in")) inn += amt; else out += amt;
+  });
+  return { open, inn, out, cur: open + inn - out, tracking: true };
+}
+
 function netWorth() {
-  const assets = sum(data.accounts.filter((a) => a.kind !== "liability"), (a) => a.value);
+  const assets = sum(data.accounts.filter((a) => a.kind !== "liability"), (a) => acctBal(a).cur);
   const cardDues = sum(data.cards, (c) => c.outstanding);
   const liabilities = sum(data.accounts.filter((a) => a.kind === "liability"), (a) => a.value) + cardDues;
   const invested = sum(data.investments, (i) => i.current);
@@ -412,7 +433,7 @@ function overview() {
 
   // reserves, debt, commitments, cover
   const exp3 = sExp.slice(-3).filter(Boolean), avgExp = exp3.length ? sum(exp3, (x) => x) / exp3.length : exp;
-  const liquid = sum(data.accounts.filter((a) => a.kind === "bank account"), (a) => a.value);
+  const liquid = sum(data.accounts.filter((a) => a.kind === "bank account"), (a) => acctBal(a).cur);
   const reserveM = avgExp > 0 ? liquid / avgExp : 0;
   const cmAct = data.commitments.filter((c) => commitActive(c, thisM));
   const emiTotal = sum(cmAct.filter((c) => c.type === "EMI"), (c) => c.amount), cmTotal = sum(cmAct, (c) => c.amount);
@@ -581,6 +602,7 @@ function transactions() {
         <input name="amount" type="number" min="0" step="0.01" placeholder="Amount (₹)" required>
         <input name="date" type="date" value="${todayStr()}" required>
         <input name="note" placeholder="Note" maxlength="120">
+        ${data.accounts.some((a) => a.kind === "bank account") ? `<select name="account" title="Which bank account (updates its balance)"><option value="">Account (optional)</option>${data.accounts.filter((a) => a.kind === "bank account").map((a) => `<option>${esc(a.name)}</option>`).join("")}</select>` : ""}
         <button class="primary">Add</button>
       </form>
       <p class="muted">${all.length} entries · Income <b class="good">${fmt(li)}</b> · Expenses <b class="bad">${fmt(le)}</b> · Net <b>${fmt(li - le)}</b> · Transfers ⇄ <b>${fmt(sum(all.filter((t) => t.type === "transfer"), (t) => t.amount))}</b>${all.length > rows.length ? ` · showing latest ${rows.length}` : ""}</p>
@@ -609,7 +631,7 @@ function transactions() {
   document.getElementById("f").onsubmit = async (e) => {
     e.preventDefault();
     const f = new FormData(e.target);
-    await add("transactions", { type: f.get("type"), category: f.get("category"), amount: Number(f.get("amount")), date: f.get("date"), note: f.get("note") });
+    await add("transactions", { type: f.get("type"), category: f.get("category"), amount: Number(f.get("amount")), date: f.get("date"), note: f.get("note"), ...(f.get("account") ? { account: f.get("account") } : {}) });
   };
   bindDelete("transactions");
 }
@@ -796,7 +818,7 @@ function cardDetail(c) {
 
 const RULE_DEFAULTS = { salary: "", refund: "refund, reversal, chargeback, refd, returned", cashback: "cashback, cash back, reward" };
 const KW_XFER = ["Own account", "Loan repayment", "Card bill", "FD / RD", "From friends/family"];
-const KW_CLASSES = KW_XFER.concat(["Refund", "Cashback", "Salary"]);
+const KW_CLASSES = KW_XFER.concat(["Refund", "Cashback", "Salary", "Expense (not a transfer)"]);
 const KW_SPEND = EXPENSE_CATS.filter((c) => c !== "Other");
 window.KW_XFER = KW_XFER;
 const kwOpts = (sel) => `<optgroup label="Transfer / income">${opts(KW_CLASSES, sel)}</optgroup><optgroup label="Spend category (budget)">${opts(KW_SPEND, sel)}</optgroup>`;
@@ -825,18 +847,24 @@ function networthView() {
     <div class="grid two nwgrid">
       <div class="card">
         <h2>Assets & liabilities</h2>
+        ${(() => { const banks = data.accounts.filter((a) => a.kind === "bank account"); if (!banks.length) return ""; const tot = sum(banks, (a) => acctBal(a).cur);
+          return `<div class="baltiles">${banks.map((a) => { const b = acctBal(a); return `<div class="baltile"><div class="balname">${acctIcon(a)}<span>${esc(a.name)}</span></div><div class="balval ${b.cur < 0 ? "bad" : ""}">${fmt(b.cur)}</div><div class="muted sm">${b.tracking ? `<span class="good">+${fmt(b.inn)}</span> <span class="bad">−${fmt(b.out)}</span> since ${esc(dShort(new Date(a.asof + "T00:00:00")))}` : "set the date to track"}</div></div>`; }).join("")}<div class="baltile total"><div class="balname"><span>All bank accounts</span></div><div class="balval">${fmt(tot)}</div></div></div>`; })()}
+        <p class="muted sm">Balance = opening balance + money in − money out for ledger entries dated after the "as of" date. Entries count when their account is this one: pick it in the Ledger, or it is read from SMS/statements using the account numbers below. To match your bank, edit (✎) the balance and set the date to today.</p>
         <form class="inline" id="f">
           <input name="name" placeholder="Name" required maxlength="60">
           <select name="kind"><option value="bank account">Bank account</option><option value="asset">Other asset</option><option value="liability">Liability</option></select>
           <select name="role" title="What this account is used for"><option value="">Role (optional)</option>${ACCT_ROLES.map((r) => `<option>${r}</option>`).join("")}</select>
           <input name="rate" type="number" min="0" step="0.1" placeholder="Interest % a year (loans)" title="Optional, shown in Debt and interest on the dashboard">
-          <input name="value" type="number" min="0" step="0.01" placeholder="Value (₹)" required>
+          <input name="value" type="number" min="0" step="0.01" placeholder="Balance / value (₹)" required>
+          <input name="asof" type="date" value="${todayStr()}" title="Balance as of this date. Ledger entries after it change the balance.">
           <button class="primary">Add</button>
         </form>
-        <div class="scroll"><table><thead><tr><th>Name</th><th>Kind</th><th class="num">Value</th><th></th></tr></thead>
+        <div class="scroll"><table><thead><tr><th>Name</th><th>Kind</th><th>As of</th><th class="num">Opening</th><th class="num">In / Out</th><th class="num">Balance now</th><th></th></tr></thead>
         <tbody>${data.accounts.map((a) => `<tr><td><div class="subname"><label class="icopick" title="Click to use your own icon">${acctIcon(a)}<input type="file" accept="image/*" data-ico="${esc("acct:" + a.name.toLowerCase())}" hidden></label><span>${esc(a.name)}${subIcons["acct:" + a.name.toLowerCase()] ? ` <a href="#" class="link" data-icoreset="${esc("acct:" + a.name.toLowerCase())}">reset</a>` : ""}</span></div></td><td><span class="pill ${a.kind === "liability" ? "bad" : a.kind === "bank account" ? "ok" : ""}">${a.kind === "bank account" ? "Bank account" : a.kind === "asset" ? "Other asset" : "Liability"}</span>${a.role ? ` <span class="muted sm">${esc(a.role)}</span>` : ""}${a.match ? `<div class="muted sm" title="Used to recognise transfers in statements">🔗 ${esc(a.match)}</div>` : ""}${a.phone ? `<div class="muted sm" title="Own number: payments to it count as own transfers">📱 ${esc(a.phone)}</div>` : ""}</td>
-          <td class="num ${a.kind === "liability" ? "bad" : ""}">${fmt(a.value)}</td>
-          <td><button class="del" data-del="${esc(a.id)}" title="Delete">✕</button></td></tr>`).join("") || `<tr><td colspan="4" class="muted">Nothing added yet.</td></tr>`}</tbody></table></div>
+          ${(() => { const b = acctBal(a), bank = a.kind === "bank account"; return bank
+            ? `<td><input type="date" class="asofin" data-asofid="${esc(a.id)}" value="${esc(a.asof || "")}" title="Balance as of this date. Entries after it update the balance."></td><td class="num">${fmt(b.open)}</td><td class="num sm">${b.tracking ? `<span class="good">+${fmt(b.inn)}</span> <span class="bad">−${fmt(b.out)}</span>` : `<span class="muted">set date</span>`}</td><td class="num"><b>${fmt(b.cur)}</b></td>`
+            : `<td class="muted">–</td><td class="num">${fmt(a.value)}</td><td class="muted num">–</td><td class="num ${a.kind === "liability" ? "bad" : ""}"><b>${fmt(a.value)}</b></td>`; })()}
+          <td><button class="del" data-del="${esc(a.id)}" title="Delete">✕</button></td></tr>`).join("") || `<tr><td colspan="7" class="muted">Nothing added yet.</td></tr>`}</tbody></table></div>
         <div class="chart-wrap" style="margin-top:18px"><canvas id="c1"></canvas></div>
       </div>
       <div class="card cccol">
@@ -878,6 +906,7 @@ function networthView() {
         <button class="primary">Save keywords</button>
       </form>
     </div>`;
+  document.querySelectorAll("[data-asofid]").forEach((i) => (i.onchange = () => update("accounts", i.dataset.asofid, { asof: i.value })));
   document.getElementById("ruleForm").onsubmit = async (e) => {
     e.preventDefault(); const f = new FormData(e.target);
     // read everything first: each write re-renders the page and would reset the inputs
@@ -909,7 +938,7 @@ function networthView() {
   document.getElementById("f").onsubmit = async (e) => {
     e.preventDefault();
     const f = new FormData(e.target);
-    await add("accounts", { name: f.get("name"), kind: f.get("kind"), role: f.get("role") || "", rate: f.get("rate") === "" ? null : Number(f.get("rate")), value: Number(f.get("value")) });
+    await add("accounts", { name: f.get("name"), kind: f.get("kind"), role: f.get("role") || "", rate: f.get("rate") === "" ? null : Number(f.get("rate")), value: Number(f.get("value")), ...(f.get("kind") === "bank account" ? { asof: f.get("asof") || todayStr() } : {}) });
   };
   document.getElementById("cardForm").onsubmit = async (e) => {
     e.preventDefault();
@@ -1148,7 +1177,7 @@ const EDIT_SCHEMA = {
   transactions: [["type", "Type", "select", ["expense", "income", "transfer"]], ["dir", "Direction (transfers)", "select", [["out", "Money out"], ["in", "Money in"]]], ["category", "Category", "select", ALL_CATS], ["amount", "Amount (₹)", "number"], ["date", "Date", "date"], ["note", "Note", "text"], ["account", "Account / statement label", "text"]],
   budgets: [["category", "Category", "select", EXPENSE_CATS], ["limit", "Monthly limit (₹)", "number"]],
   investments: [["name", "Name", "text"], ["type", "Type", "select", INV_TYPES], ["invested", "Invested (₹)", "number"], ["current", "Current value (₹)", "number"]],
-  accounts: [["name", "Name", "text"], ["kind", "Type", "select", [["bank account", "Bank account"], ["asset", "Other asset"], ["liability", "Liability"]]], ["role", "Role", "select", ["", ...ACCT_ROLES]], ["rate", "Interest % a year (loans, optional)", "number"], ["value", "Value (₹)", "number"]],
+  accounts: [["name", "Name", "text"], ["kind", "Type", "select", [["bank account", "Bank account"], ["asset", "Other asset"], ["liability", "Liability"]]], ["role", "Role", "select", ["", ...ACCT_ROLES]], ["rate", "Interest % a year (loans, optional)", "number"], ["value", "Balance / value (₹) on the date below", "number"], ["asof", "Balance as of (bank accounts)", "date"]],
   goals: [["name", "Goal name", "text"], ["target", "Target (₹)", "number"], ["saved", "Saved so far (₹)", "number"]],
   cards: [["name", "Card name", "text"], ["last4", "Last 4 digits", "text"], ["network", "Network", "select", NETS], ["limit", "Credit limit (₹)", "number"], ["outstanding", "Outstanding (₹)", "number"], ["dueDay", "Due day (1-31)", "number"]],
   planning: [["area", "Area", "select", PLAN_AREAS], ["item", "Item", "text"], ["detail", "Detail", "text"], ["status", "Status", "select", PLAN_STATUS]],
