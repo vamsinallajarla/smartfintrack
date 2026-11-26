@@ -140,7 +140,7 @@ async function login() {
 const logout = () => fb.signOut(fb.auth);
 
 // ---------- CRUD ----------
-const APP_BUILD = 63;
+const APP_BUILD = 64;
 // run a Firebase write; show the real reason on screen instead of failing silently
 async function fbWrite(what, fn) {
   try { return await fn(); }
@@ -590,12 +590,18 @@ function transactions() {
         <td><button class="del" data-del="${esc(t.id)}" title="Delete">✕</button></td></tr>`).join("") || `<tr><td colspan="6" class="muted">No transactions yet.</td></tr>`}</tbody></table></div>
     </div>
     <div class="card xferbox">
-      <div class="card-title"><h3>Transfers and non-salary credits</h3><button type="button" class="ghost sm" id="xferScan">Find transfers in my entries</button></div>
+      <div class="card-title"><h3>Transfers and non-salary credits</h3><span><button type="button" class="ghost sm" id="xferScan">Find transfers in my entries</button> <button type="button" class="ghost sm" id="recatBtn" title="Re-guess the category of entries marked Other">Re-categorise "Other"</button></span></div>
       <p class="muted">Counted separately: not income, not expense, not in savings rate. Own-account moves, money from friends/family, refunds and cashback land here; only salary counts as income. ${xf.length} entr${xf.length === 1 ? "y" : "ies"} · Moved out <b>${fmt(xOut)}</b> · Moved in <b>${fmt(xIn)}</b> · Net left your accounts <b>${fmt(xOut - xIn)}</b> <span class="sm">(loans, FDs or accounts you haven't imported)</span></p>
       ${xf.length ? `<div class="scroll"><table><thead><tr><th>Account</th><th class="num">Out</th><th class="num">In</th><th class="num">Net</th></tr></thead><tbody>${Object.entries(xAcc).map(([k, v]) => `<tr><td>${esc(k)}</td><td class="num">${fmt(v.o)}</td><td class="num">${fmt(v.i)}</td><td class="num">${fmt(v.i - v.o)}</td></tr>`).join("")}</tbody></table></div>` : `<p class="muted sm">None yet. Import statements from several accounts, add your accounts under Net worth (with account numbers / UPI ids), or tap Find transfers.</p>`}
     </div>`;
   if (window.smsBind) window.smsBind($app);
   document.getElementById("xferScan").onclick = () => window.impScanLedger && window.impScanLedger();
+  document.getElementById("recatBtn").onclick = async () => {
+    const list = data.transactions.filter((t) => t.type === "expense" && (!t.category || t.category === "Other"));
+    const todo = list.map((t) => [t, impGuess(t.note || "", "expense")]).filter(([, c]) => c && c !== "Other");
+    for (const [t, c] of todo) await update("transactions", t.id, { category: c });
+    authToast(todo.length ? `${todo.length} entr${todo.length === 1 ? "y" : "ies"} re-categorised` : "Nothing to re-categorise");
+  };
   document.getElementById("impBtn").onclick = () => window.openImport && window.openImport();
   document.getElementById("clrBtn").onclick = () => window.impClear && window.impClear();
   const typeSel = document.getElementById("typeSel");
@@ -659,6 +665,7 @@ function budgets() {
     </div>
     <div class="card" id="budgetBox">
       <h2>Monthly budgets (${m})</h2>
+      <p class="muted sm">Spending counts toward a budget when the entry's category matches it. Categories are guessed from the text (Swiggy → Food, Uber → Transport…). Add your own words under Net worth → Other keywords.</p>
       <form class="inline" id="f">
         <select name="category">${opts(EXPENSE_CATS)}</select>
         <input name="limit" type="number" min="1" step="1" placeholder="Monthly limit (₹)" required>
@@ -788,7 +795,11 @@ function cardDetail(c) {
 }
 
 const RULE_DEFAULTS = { salary: "", refund: "refund, reversal, chargeback, refd, returned", cashback: "cashback, cash back, reward" };
-const KW_CLASSES = ["Own account", "Loan repayment", "Card bill", "FD / RD", "From friends/family", "Refund", "Cashback", "Salary"];
+const KW_XFER = ["Own account", "Loan repayment", "Card bill", "FD / RD", "From friends/family"];
+const KW_CLASSES = KW_XFER.concat(["Refund", "Cashback", "Salary"]);
+const KW_SPEND = EXPENSE_CATS.filter((c) => c !== "Other");
+window.KW_XFER = KW_XFER;
+const kwOpts = (sel) => `<optgroup label="Transfer / income">${opts(KW_CLASSES, sel)}</optgroup><optgroup label="Spend category (budget)">${opts(KW_SPEND, sel)}</optgroup>`;
 const splitWords = (v) => String(v || "").split(/[,;\n]/).map((x) => x.trim().toLowerCase()).filter((x) => x.length >= 3);
 const customKw = () => data.rules.filter((x) => x.kind === "kw" && x.words).map((x) => ({ words: splitWords(x.words), cls: x.cls || "Own account" }));
 window.customKw = customKw;
@@ -860,9 +871,9 @@ function networthView() {
           <p class="muted sm">Any debit or credit that mentions these is an own-account transfer, not income or expense. Add your account numbers (or last 3-4 digits), UPI IDs, your name text and phone / UPI numbers.</p>
           ${data.accounts.length ? `<div class="scroll"><table class="ownids"><thead><tr><th>Account</th><th>Account no. / UPI id / name</th><th>Phone / UPI number</th></tr></thead><tbody>${data.accounts.map((a) => `<tr data-acc="${esc(a.id)}"><td>${esc(a.name)}${a.role ? ` <span class="muted sm">${esc(a.role)}</span>` : ""}</td><td><input data-am value="${esc(a.match || "")}" placeholder="e.g. 8050, name@okhdfc, NALLAJAR" maxlength="120"></td><td><input data-ap value="${esc(a.phone || "")}" placeholder="10 digits, comma separated" maxlength="60"></td></tr>`).join("")}</tbody></table></div>` : `<p class="muted sm">Add your accounts above first, then add their numbers here.</p>`}</div>
         <div class="rulenote"><h3 class="rulesub">Other keywords: any text from a transaction</h3>
-          <p class="muted sm">Type any name, UPI id, phone, merchant or phrase that appears in a transaction and choose how it is classified. Example: <b>nallajarla upen</b> → Own account.</p>
-          <div class="scroll"><table class="ownids kwtable"><tbody>${data.rules.filter((x) => x.kind === "kw").map((k) => `<tr data-kw="${esc(k.id)}"><td><input data-kww value="${esc(k.words || "")}" maxlength="120"></td><td><select data-kwc>${opts(KW_CLASSES, k.cls || "Own account")}</select></td><td><button type="button" class="del" data-kwdel="${esc(k.id)}" title="Remove">✕</button></td></tr>`).join("")}
-          <tr><td><input name="kwnew" placeholder="e.g. nallajarla upen, rent, john@okaxis" maxlength="120"></td><td><select name="kwcls">${opts(KW_CLASSES, "Own account")}</select></td><td><button type="button" class="ghost sm" id="kwAdd">Add</button></td></tr></tbody></table></div></div>
+          <p class="muted sm">Type any name, UPI id, phone, merchant or phrase that appears in a transaction and choose how it is classified. Examples: <b>nallajarla upen</b> → Own account, <b>swiggy</b> → Food (counts toward your Food budget).</p>
+          <div class="scroll"><table class="ownids kwtable"><tbody>${data.rules.filter((x) => x.kind === "kw").map((k) => `<tr data-kw="${esc(k.id)}"><td><input data-kww value="${esc(k.words || "")}" maxlength="120"></td><td><select data-kwc>${kwOpts(k.cls || "Own account")}</select></td><td><button type="button" class="del" data-kwdel="${esc(k.id)}" title="Remove">✕</button></td></tr>`).join("")}
+          <tr><td><input name="kwnew" placeholder="e.g. nallajarla upen, rent, john@okaxis" maxlength="120"></td><td><select name="kwcls">${kwOpts("Own account")}</select></td><td><button type="button" class="ghost sm" id="kwAdd">Add</button></td></tr></tbody></table></div></div>
         <div class="rulenote muted sm">"salary", "payroll" and bank interest are always recognised. Refunds, cashback and friends/family are kept out of income.</div>
         <button class="primary">Save keywords</button>
       </form>

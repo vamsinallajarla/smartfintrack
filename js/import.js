@@ -91,6 +91,7 @@ function impDetect(head) {
 }
 
 function impGuess(desc, type) {
+  if (type === "expense") { const ck = (window.customKw ? window.customKw() : []).find((k) => EXPENSE_CATS.includes(k.cls) && k.words.some((w) => String(desc).toLowerCase().includes(w))); if (ck) return ck.cls; }
   const sub = data.subs.find((s) => String(desc).toLowerCase().includes(String(s.name).toLowerCase()));
   if (type === "expense" && sub) return "Subscriptions";
   const rules = type === "income" ? IMP_INCOME_RULES : IMP_RULES;
@@ -160,7 +161,7 @@ function impMarkTransfers(all) {
     const hit = own.find((o) => o.phone ? new RegExp("(?<!\\d)(?:\\+?91[\\s-]?)?" + o.id + "(?!\\d)").test(t.note || "") : n.includes(o.id) && (o.name.toLowerCase() !== acc || !/\d/.test(o.id)) && (!o.card || /card|cc|bill|payment/.test(n)));
     const mm = hit ? null : String(t.note || "").match(/(?<!\d)(\d)[Xx*]{5,7}(\d{3})(?!\d)/); // masked own number, e.g. 9XXXXXX951
     const maskHit = mm && own.some((o) => o.phone && o.id[0] === mm[1] && o.id.slice(-3) === mm[2]);
-    const ck = (window.customKw ? window.customKw() : []).find((k) => k.cls !== "Salary" && k.cls !== "Refund" && k.cls !== "Cashback" && k.words.some((w) => n.includes(w)));
+    const ck = (window.customKw ? window.customKw() : []).find((k) => window.KW_XFER.includes(k.cls) && k.words.some((w) => n.includes(w)));
     if (ck) { t.xfer = "own"; t.xcat = ck.cls; }
     else if (hit || maskHit) { t.xfer = "own"; t.xcat = impXferCat(t, hit || { loan: false }); }
     else if (IMP_XFER_RE.test(t.note)) { t.xfer = "keyword"; t.xcat = impXferCat(t, null); }
