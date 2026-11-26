@@ -16,9 +16,12 @@ function doPost(e) {
   let body = {};
   try { body = JSON.parse(e.postData.contents); } catch (err) { body = e.parameter || {}; }
   if (!body.token || body.token !== props.getProperty("TOKEN")) return out_("unauthorized");
-  const text = String(body.text || "").trim().slice(0, 1000);
-  if (!text) return out_("empty");
-  const id = Utilities.computeDigest(Utilities.DigestAlgorithm.MD5, text).map(function (b) { return ("0" + (b & 255).toString(16)).slice(-2); }).join("");
+  let text = String(body.text || "").trim().slice(0, 1000);
+  if (!text) { // nothing readable arrived: store what did arrive so you can see it in the app's Pending list
+    const copy = {}; Object.keys(body).forEach(function (k) { if (k !== "token") copy[k] = body[k]; });
+    text = ("EMPTY TEXT. Received: " + JSON.stringify(copy) + " raw: " + String((e.postData && e.postData.contents) || "").replace(props.getProperty("TOKEN"), "***")).slice(0, 600);
+  }
+  const id = Utilities.computeDigest(Utilities.DigestAlgorithm.MD5, text + (body.text ? "" : String(Date.now()))).map(function (b) { return ("0" + (b & 255).toString(16)).slice(-2); }).join("");
   const url = "https://firestore.googleapis.com/v1/projects/" + props.getProperty("PROJECT_ID") + "/databases/(default)/documents/users/" + props.getProperty("UID") + "/inbox?documentId=" + id;
   const res = UrlFetchApp.fetch(url, {
     method: "post", contentType: "application/json", muteHttpExceptions: true,
