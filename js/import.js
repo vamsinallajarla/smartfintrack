@@ -160,7 +160,9 @@ function impMarkTransfers(all) {
     const hit = own.find((o) => o.phone ? new RegExp("(?<!\\d)(?:\\+?91[\\s-]?)?" + o.id + "(?!\\d)").test(t.note || "") : n.includes(o.id) && (o.name.toLowerCase() !== acc || !/\d/.test(o.id)) && (!o.card || /card|cc|bill|payment/.test(n)));
     const mm = hit ? null : String(t.note || "").match(/(?<!\d)(\d)[Xx*]{5,7}(\d{3})(?!\d)/); // masked own number, e.g. 9XXXXXX951
     const maskHit = mm && own.some((o) => o.phone && o.id[0] === mm[1] && o.id.slice(-3) === mm[2]);
-    if (hit || maskHit) { t.xfer = "own"; t.xcat = impXferCat(t, hit || { loan: false }); }
+    const ck = (window.customKw ? window.customKw() : []).find((k) => k.cls !== "Salary" && k.cls !== "Refund" && k.cls !== "Cashback" && k.words.some((w) => n.includes(w)));
+    if (ck) { t.xfer = "own"; t.xcat = ck.cls; }
+    else if (hit || maskHit) { t.xfer = "own"; t.xcat = impXferCat(t, hit || { loan: false }); }
     else if (IMP_XFER_RE.test(t.note)) { t.xfer = "keyword"; t.xcat = impXferCat(t, null); }
   });
   const grp = (t) => t.file || t.account || "";

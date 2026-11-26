@@ -140,7 +140,7 @@ async function login() {
 const logout = () => fb.signOut(fb.auth);
 
 // ---------- CRUD ----------
-const APP_BUILD = 61;
+const APP_BUILD = 63;
 // run a Firebase write; show the real reason on screen instead of failing silently
 async function fbWrite(what, fn) {
   try { return await fn(); }
@@ -205,7 +205,7 @@ const F = { mode: "month", month: thisMonth(), year: String(new Date().getFullYe
 const FKEY = "smartfintrack-filters-v1";
 try { Object.assign(F, JSON.parse(localStorage.getItem(FKEY) || "{}")); } catch {}
 if (!["month", "year", "range", "all"].includes(F.mode)) F.mode = "month";
-F.q = "";
+F.mode = "month"; F.month = thisMonth(); F.type = "all"; F.cat = "all"; F.q = ""; // every visit starts on the current month
 const saveFilters = () => { try { localStorage.setItem(FKEY, JSON.stringify(F)); } catch {} };
 const inSel = (t) => {
   const d = String(t.date);
@@ -585,7 +585,7 @@ function transactions() {
       </form>
       <p class="muted">${all.length} entries · Income <b class="good">${fmt(li)}</b> · Expenses <b class="bad">${fmt(le)}</b> · Net <b>${fmt(li - le)}</b> · Transfers ⇄ <b>${fmt(sum(all.filter((t) => t.type === "transfer"), (t) => t.amount))}</b>${all.length > rows.length ? ` · showing latest ${rows.length}` : ""}</p>
       <div class="scroll"><table><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Note</th><th class="num">Amount</th><th></th></tr></thead>
-      <tbody>${rows.map((t) => `<tr><td>${esc(t.date)}</td><td>${esc(t.type)}</td><td>${esc(t.category)}</td><td>${txIcon(t) ? `<span class="notecell">${txIcon(t)}${esc(t.note)}</span>` : esc(t.note)}${t.account ? ` <span class="acctag">${esc(t.account)}</span>` : ""}</td>
+      <tbody>${rows.map((t) => `<tr><td>${esc(t.date)}</td><td>${esc(t.type)}</td><td>${esc(t.category)}</td><td>${txIcon(t) ? `<span class="notecell">${txIcon(t)}${esc(t.note)}</span>` : esc(t.note)}${t.account ? ` <span class="acctag">${esc(t.account)}</span>` : ""}${t.src === "sms" ? ` <span class="acctag" title="${esc(t.raw || "Added from a bank SMS")}">SMS</span>` : ""}</td>
         <td class="num ${txCls(t)}">${txAmt(t)}</td>
         <td><button class="del" data-del="${esc(t.id)}" title="Delete">✕</button></td></tr>`).join("") || `<tr><td colspan="6" class="muted">No transactions yet.</td></tr>`}</tbody></table></div>
     </div>
@@ -788,7 +788,15 @@ function cardDetail(c) {
 }
 
 const RULE_DEFAULTS = { salary: "", refund: "refund, reversal, chargeback, refd, returned", cashback: "cashback, cash back, reward" };
-const ruleWords = (kind) => { const r = data.rules.find((x) => x.kind === kind); return String(r ? r.words : RULE_DEFAULTS[kind] || "").split(/[,;\n]/).map((x) => x.trim().toLowerCase()).filter((x) => x.length >= 3); };
+const KW_CLASSES = ["Own account", "Loan repayment", "Card bill", "FD / RD", "From friends/family", "Refund", "Cashback", "Salary"];
+const splitWords = (v) => String(v || "").split(/[,;\n]/).map((x) => x.trim().toLowerCase()).filter((x) => x.length >= 3);
+const customKw = () => data.rules.filter((x) => x.kind === "kw" && x.words).map((x) => ({ words: splitWords(x.words), cls: x.cls || "Own account" }));
+window.customKw = customKw;
+const ruleWords = (kind) => {
+  const r = data.rules.find((x) => x.kind === kind), cls = { salary: "Salary", refund: "Refund", cashback: "Cashback" }[kind];
+  const extra = cls ? customKw().filter((k) => k.cls === cls).flatMap((k) => k.words) : [];
+  return splitWords(r ? r.words : RULE_DEFAULTS[kind] || "").concat(extra);
+};
 window.ruleWords = ruleWords;
 function networthView() {
   const nw = netWorth();
@@ -851,6 +859,10 @@ function networthView() {
         <div class="rulenote"><h3 class="rulesub">Own accounts: account numbers, UPI IDs, names and phone numbers</h3>
           <p class="muted sm">Any debit or credit that mentions these is an own-account transfer, not income or expense. Add your account numbers (or last 3-4 digits), UPI IDs, your name text and phone / UPI numbers.</p>
           ${data.accounts.length ? `<div class="scroll"><table class="ownids"><thead><tr><th>Account</th><th>Account no. / UPI id / name</th><th>Phone / UPI number</th></tr></thead><tbody>${data.accounts.map((a) => `<tr data-acc="${esc(a.id)}"><td>${esc(a.name)}${a.role ? ` <span class="muted sm">${esc(a.role)}</span>` : ""}</td><td><input data-am value="${esc(a.match || "")}" placeholder="e.g. 8050, name@okhdfc, NALLAJAR" maxlength="120"></td><td><input data-ap value="${esc(a.phone || "")}" placeholder="10 digits, comma separated" maxlength="60"></td></tr>`).join("")}</tbody></table></div>` : `<p class="muted sm">Add your accounts above first, then add their numbers here.</p>`}</div>
+        <div class="rulenote"><h3 class="rulesub">Other keywords: any text from a transaction</h3>
+          <p class="muted sm">Type any name, UPI id, phone, merchant or phrase that appears in a transaction and choose how it is classified. Example: <b>nallajarla upen</b> → Own account.</p>
+          <div class="scroll"><table class="ownids kwtable"><tbody>${data.rules.filter((x) => x.kind === "kw").map((k) => `<tr data-kw="${esc(k.id)}"><td><input data-kww value="${esc(k.words || "")}" maxlength="120"></td><td><select data-kwc>${opts(KW_CLASSES, k.cls || "Own account")}</select></td><td><button type="button" class="del" data-kwdel="${esc(k.id)}" title="Remove">✕</button></td></tr>`).join("")}
+          <tr><td><input name="kwnew" placeholder="e.g. nallajarla upen, rent, john@okaxis" maxlength="120"></td><td><select name="kwcls">${opts(KW_CLASSES, "Own account")}</select></td><td><button type="button" class="ghost sm" id="kwAdd">Add</button></td></tr></tbody></table></div></div>
         <div class="rulenote muted sm">"salary", "payroll" and bank interest are always recognised. Refunds, cashback and friends/family are kept out of income.</div>
         <button class="primary">Save keywords</button>
       </form>
@@ -863,13 +875,23 @@ function networthView() {
       const match = tr.querySelector("[data-am]").value.trim(), phone = tr.querySelector("[data-ap]").value.trim();
       return match !== (a.match || "") || phone !== (a.phone || "") ? { id: a.id, match, phone } : null;
     }).filter(Boolean);
+    const kwChanges = [...document.querySelectorAll("#ruleForm tr[data-kw]")].map((tr) => {
+      const k = data.rules.find((x) => x.id === tr.dataset.kw); if (!k) return null;
+      const words = tr.querySelector("[data-kww]").value.trim(), cls = tr.querySelector("[data-kwc]").value;
+      return words !== (k.words || "") || cls !== (k.cls || "Own account") ? { id: k.id, words, cls } : null;
+    }).filter(Boolean);
+    const kwNew = String(f.get("kwnew") || "").trim(), kwCls = String(f.get("kwcls") || "Own account");
     for (const kind of ["salary", "refund", "cashback"]) {
       const words = String(f.get(kind) || "").trim(), cur = data.rules.find((x) => x.kind === kind);
       if (cur) { if (cur.words !== words) await update("rules", cur.id, { words }); } else await add("rules", { kind, words });
     }
     for (const c of accChanges) await update("accounts", c.id, { match: c.match, phone: c.phone });
+    for (const c of kwChanges) await update("rules", c.id, { words: c.words, cls: c.cls });
+    if (kwNew) await add("rules", { kind: "kw", words: kwNew, cls: kwCls });
     authToast("Saved");
   };
+  document.getElementById("kwAdd").onclick = () => document.getElementById("ruleForm").requestSubmit();
+  document.querySelectorAll("[data-kwdel]").forEach((b) => (b.onclick = () => remove("rules", b.dataset.kwdel)));
   chart("c1", { type: "bar", data: { labels: ["Cash & assets", "Investments", "Liabilities (incl. cards)"],
     datasets: [{ data: [nw.assets, nw.invested, nw.liabilities], backgroundColor: gradBg([css("--c1"), css("--c4"), css("--c2")]), borderRadius: 10, borderSkipped: false }] },
     options: { plugins: { legend: { display: false } } } });

@@ -1021,3 +1021,6 @@ main[data-view]:not([data-view="overview"]) .scroll thead th { position: sticky;
 main[data-view]:not([data-view="overview"]) .chart-wrap { height: 190px; }
 main[data-view]:not([data-view="overview"]) .budget-row { margin-bottom: 8px; }
 main[data-view]:not([data-view="overview"]) .two { margin-bottom: 10px; }
+.kwtable select { width: 100%; padding: 5px 8px; font-size: 12px; }
+.kwtable td { padding: 3px 6px; }
+.kwtable { min-width: 460px; }

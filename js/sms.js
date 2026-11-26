@@ -84,7 +84,7 @@ window.smsBind = function (root) {
     for (const tr of rows) {
       const r = byId[tr.dataset.sid]; if (!r) continue;
       const type = tr.querySelector("[data-st]").value, category = tr.querySelector("[data-sk]").value;
-      await add("transactions", { date: r.date, type, dir: r.dir, amount: r.amount, note: r.note.slice(0, 120), category, account: r.account, src: "sms" });
+      await add("transactions", { date: r.date, type, dir: r.dir, amount: r.amount, note: r.note.slice(0, 120), category, account: r.account, src: "sms", raw: String(r.raw || "").slice(0, 300) });
       await remove("inbox", r.id);
     }
   };
