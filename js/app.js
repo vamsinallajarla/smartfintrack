@@ -140,7 +140,7 @@ async function login() {
 const logout = () => fb.signOut(fb.auth);
 
 // ---------- CRUD ----------
-const APP_BUILD = 66;
+const APP_BUILD = 67;
 // run a Firebase write; show the real reason on screen instead of failing silently
 async function fbWrite(what, fn) {
   try { return await fn(); }
@@ -606,7 +606,7 @@ function transactions() {
         <button class="primary">Add</button>
       </form>
       <p class="muted">${all.length} entries · Income <b class="good">${fmt(li)}</b> · Expenses <b class="bad">${fmt(le)}</b> · Net <b>${fmt(li - le)}</b> · Transfers ⇄ <b>${fmt(sum(all.filter((t) => t.type === "transfer"), (t) => t.amount))}</b>${all.length > rows.length ? ` · showing latest ${rows.length}` : ""}</p>
-      <div class="scroll"><table><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Note</th><th class="num">Amount</th><th></th></tr></thead>
+      <div class="scroll"><table class="txtable"><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Note</th><th class="num">Amount</th><th></th></tr></thead>
       <tbody>${rows.map((t) => `<tr><td>${esc(t.date)}</td><td>${esc(t.type)}</td><td>${esc(t.category)}</td><td>${txIcon(t) ? `<span class="notecell">${txIcon(t)}${esc(t.note)}</span>` : esc(t.note)}${t.account ? ` <span class="acctag">${esc(t.account)}</span>` : ""}${t.src === "sms" ? ` <span class="acctag" title="${esc(t.raw || "Added from a bank SMS")}">SMS</span>` : ""}</td>
         <td class="num ${txCls(t)}">${txAmt(t)}</td>
         <td><button class="del" data-del="${esc(t.id)}" title="Delete">✕</button></td></tr>`).join("") || `<tr><td colspan="6" class="muted">No transactions yet.</td></tr>`}</tbody></table></div>
